@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - "4099:4099"
+      - '4099:4099'
     depends_on:
       - rabbitmq
 
@@ -29,7 +29,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "4001:4001"
+      - '4001:4001'
 
   page-builder:
     build:
@@ -47,15 +47,15 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "4002:4002"
+      - '4002:4002'
 
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
     restart: always
     ports:
-      - "5673:5673"
-      - "15673:15672"
+      - '5673:5673'
+      - '15673:15672'
     environment:
       - RABBITMQ_DEFAULT_USER=user
       - RABBITMQ_DEFAULT_PASS=password
@@ -73,7 +73,7 @@ services:
     volumes:
       - user-db-data:/var/lib/postgresql/data
     ports:
-      - "5433:5433"
+      - '5433:5433'
 
   page-builder-db:
     container_name: page-builder-db
@@ -87,7 +87,7 @@ services:
     volumes:
       - page-builder-db-data:/var/lib/postgresql/data
     ports:
-      - "5434:5434"
+      - '5434:5434'
 
 volumes:
   user-db-data:
