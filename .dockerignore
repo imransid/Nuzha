@@ -1,0 +1,17 @@
+# Versoning & metadata
+.git
+.gitignore
+.dockerignore
+
+# Environment
+*.env
+
+# Build dependencies
+node_modules
+npm-debug.log
+dist
+
+# Misc
+.eslintrc.js
+.prettierrc
+README.md

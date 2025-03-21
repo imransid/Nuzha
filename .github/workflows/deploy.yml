@@ -1,0 +1,84 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js (v20.9.0 LTS)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.9.0
+          cache: 'yarn'
+
+      - name: Check for yarn.lock
+        run: |
+          if [ ! -f yarn.lock ]; then
+            echo "yarn.lock missing. Generating..."
+            yarn install --frozen-lockfile
+            git config --global user.email "ci-bot@github.com"
+            git config --global user.name "GitHub Actions"
+            git add yarn.lock
+            git commit -m "Auto-generated yarn.lock file"
+            git push origin main
+          else
+            echo "yarn.lock found."
+          fi
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test --passWithNoTests --verbose
+
+      - name: Run Prisma
+        run: npx prisma generate --schema=./prisma/schema-user.prisma
+
+      - name: Run Prisma
+        run: npx prisma generate --schema=./prisma/schema-page-builder.prisma
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker Images
+        run: |
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+          
+          # Build and push API Gateway
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:$IMAGE_TAG \
+                       -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest \
+                       -f ./apps/api-gateway/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:$IMAGE_TAG
+          docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
+          
+          # Build and push HR service
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hr:$IMAGE_TAG \
+                       -t ${{ secrets.DOCKER_USERNAME }}/hr:latest \
+                       -f ./apps/hr/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/hr:$IMAGE_TAG
+          docker push ${{ secrets.DOCKER_USERNAME }}/hr:latest
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            mkdir -p ~/.ssh
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            cd /root/nuzha/Nuzha
+            git pull origin main
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+            docker system prune -af
