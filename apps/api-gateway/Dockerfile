@@ -30,7 +30,8 @@ WORKDIR /usr/src/app
 
 COPY package*.json yarn.lock ./
 
-RUN npm install --only=production
+RUN npm install --only=production --force
+
 
 COPY . .
 
