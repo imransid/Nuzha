@@ -42,7 +42,7 @@ jobs:
       - name: Run Prisma
         run: npx prisma generate --schema=./prisma/schema-user.prisma
 
-      - name: Run Prisma
+      - name: Run Prisma (Page Builder)
         run: npx prisma generate --schema=./prisma/schema-page-builder.prisma
 
       - name: Log in to Docker Hub
@@ -51,20 +51,27 @@ jobs:
       - name: Build and Push Docker Images
         run: |
           IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          
+
           # Build and push API Gateway
           docker build -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:$IMAGE_TAG \
                        -t ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest \
                        -f ./apps/api-gateway/Dockerfile .
           docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:$IMAGE_TAG
           docker push ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
-          
-          # Build and push HR service
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/hr:$IMAGE_TAG \
-                       -t ${{ secrets.DOCKER_USERNAME }}/hr:latest \
-                       -f ./apps/hr/Dockerfile .
-          docker push ${{ secrets.DOCKER_USERNAME }}/hr:$IMAGE_TAG
-          docker push ${{ secrets.DOCKER_USERNAME }}/hr:latest
+
+          # Build and push User Service
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/user-service:$IMAGE_TAG \
+                       -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest \
+                       -f ./apps/user-service/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:$IMAGE_TAG
+          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+
+          # Build and push Page Builder
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/page-builder:$IMAGE_TAG \
+                       -t ${{ secrets.DOCKER_USERNAME }}/page-builder:latest \
+                       -f ./apps/page-builder/Dockerfile .
+          docker push ${{ secrets.DOCKER_USERNAME }}/page-builder:$IMAGE_TAG
+          docker push ${{ secrets.DOCKER_USERNAME }}/page-builder:latest
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
