@@ -23,7 +23,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-COPY package*.json yarn.lock./
+COPY package*.json yarn.lock ./
 
 RUN npm install --only=production
 
