@@ -9,7 +9,7 @@ services:
     env_file:
       - .env
     ports:
-      - '4099:4099'
+      - '4098:4098'
     depends_on:
       - rabbitmq
 
