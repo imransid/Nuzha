@@ -1,17 +1,17 @@
 services:
-  apis-gateways:
+  api-gateway:
     build:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
       target: development
-    container_name: apis-gateways-nuzha
+    container_name: api-gateway
     restart: always
     env_file:
       - .env
     ports:
       - '4098:4098'
-    # depends_on:
-    #   - rabbitmq
+    depends_on:
+      - rabbitmq
 
   user-service:
     build:
@@ -24,12 +24,12 @@ services:
       - .env
     depends_on:
       - user-db
-      # - rabbitmq
+      - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '4011:4001'
+      - '4011:4011'
 
   page-builder:
     build:
@@ -42,27 +42,27 @@ services:
       - .env
     depends_on:
       - page-builder-db
-      # - rabbitmq
+      - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '4022:4002'
+      - '4022:4022'
 
-  # rabbitmq:
-  #   image: rabbitmq:management
-  #   container_name: rabbitmq
-  #   restart: always
-  #   ports:
-  #     - '5673:5673'
-  #     - '15673:15672'
-  #   environment:
-  #     - RABBITMQ_DEFAULT_USER=user
-  #     - RABBITMQ_DEFAULT_PASS=password
-  #     - RABBITMQ_NODE_PORT=5673
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq-nuzha
+    restart: always
+    ports:
+      - '5674:5674'
+      - '15674:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+      - RABBITMQ_NODE_PORT=5674
 
   user-db:
-    container_name: user-db
+    container_name: user-db-nuzha
     image: postgres:16.0
     restart: always
     environment:
@@ -76,18 +76,18 @@ services:
       - '5433:5433'
 
   page-builder-db:
-    container_name: page-builder-db
+    container_name: page-builder-db-nuzha
     image: postgres:16.0
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=page-builder-db
-      - PGPORT=5435
+      - PGPORT=5487
     volumes:
       - page-builder-db-data:/var/lib/postgresql/data
     ports:
-      - '5435:5435'
+      - '5487:5487'
 
 volumes:
   user-db-data:

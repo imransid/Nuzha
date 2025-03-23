@@ -19,7 +19,7 @@ import { join } from 'path';
         name: 'USER_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://user:password@rabbitmq:5673'],
+          urls: ['amqp://user:password@rabbitmq:5674'],
           queue: 'user_queue',
           queueOptions: {
             durable: false,
@@ -30,7 +30,7 @@ import { join } from 'path';
         name: 'PAGE_BUILDER_SERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://user:password@rabbitmq:5673'],
+          urls: ['amqp://user:password@rabbitmq:5674'],
           queue: 'page_builder_queue',
           queueOptions: {
             durable: false,
