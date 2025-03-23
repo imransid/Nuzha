@@ -1,5 +1,5 @@
 services:
-  api-gateway:
+  apis-gateways:
     build:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
@@ -29,7 +29,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '4001:4001'
+      - '4011:4001'
 
   page-builder:
     build:
@@ -47,7 +47,7 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - '4002:4002'
+      - '4022:4002'
 
   # rabbitmq:
   #   image: rabbitmq:management
