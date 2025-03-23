@@ -22,8 +22,15 @@ import { ConfigService } from '@nestjs/config';
 import { sendMail } from '../utils/email.util';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ChangePasswordInput } from './dto/change-password.input';
+import * as path from 'path';
+import {
+  deleteFileAndDirectory,
+  uploadFileStream,
+} from 'utils/file-upload.util';
+
 @Injectable()
 export class UserService {
+  private uploadDir = path.join(process.env.UPLOAD_DIR, `UserS`, 'files');
   constructor(
     @Inject(PrismaUserService) private prismaService: PrismaUserService,
     private jwtService: JwtService,
@@ -38,12 +45,27 @@ export class UserService {
     }
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
-    return this.prismaService.users.create({
+
+    const imageFile: any = await createUserInput.photoUpload;
+    const fileName = `${Date.now()}_${imageFile.filename}`;
+    const filePath = await uploadFileStream(
+      imageFile.createReadStream,
+      this.uploadDir,
+      fileName,
+    );
+
+    user = await this.prismaService.users.create({
       data: {
         ...createUserInput,
         password: hashedPassword,
+        photo: filePath,
       },
     });
+
+    return {
+      message: `User ${user.fullName} has been successfully created.`,
+      data: user,
+    };
   }
 
   async findAll(page: number = 1, limit: number = 20) {
@@ -60,25 +82,52 @@ export class UserService {
 
   async update(id: number, updateUserInput: UpdateUserInput): Promise<User> {
     try {
-      const isUserExist: User = await this.findOne(id);
-      if (isUserExist) {
-        const updatedUserData: User = await this.prismaService.users.update({
-          data: {
-            ...updateUserInput,
-          },
-          where: {
-            id,
-          },
-        });
-        return updatedUserData;
-      } else {
-        throw new HttpException('User not exist', HttpStatus.BAD_REQUEST);
+      const isUserExist = await this.findOne(id);
+
+      if (!isUserExist) {
+        throw new HttpException('User does not exist', HttpStatus.BAD_REQUEST);
       }
+
+      var userPPUrl = isUserExist.photo;
+
+      if (updateUserInput?.photoUpload) {
+        if (isUserExist.photo) {
+          const prevPPPath = isUserExist.photo.replace(
+            `${process.env.BASE_URL}/`,
+            '',
+          );
+          deleteFileAndDirectory(prevPPPath);
+        }
+        const imageFile: any = await updateUserInput?.photoUpload;
+        const fileName = `${Date.now()}_${imageFile.filename}`;
+        const filePath = await uploadFileStream(
+          imageFile.createReadStream,
+          this.uploadDir,
+          fileName,
+        );
+        userPPUrl = filePath;
+      }
+
+      // Remove 'id' from the data object
+      const { id: _, ...updateData } = updateUserInput;
+
+      const updatedUserData = await this.prismaService.users.update({
+        data: {
+          ...updateData,
+          role: updateUserInput.role || isUserExist.role, // Ensure role is always present
+          photo: userPPUrl,
+        },
+        where: { id },
+      });
+
+      return updatedUserData;
     } catch (e) {
-      throw new HttpException(`Error Updating User : ${e}`, 500);
+      throw new HttpException(
+        `Error Updating User: ${e.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
-
   async changePassword(
     changePasswordInput: ChangePasswordInput,
   ): Promise<User> {
@@ -89,13 +138,6 @@ export class UserService {
         },
       });
       if (isUserExist) {
-        // const isTokenValid = await bcrypt.compare(
-        //   changePasswordInput.rememberToken,
-        //   isUserExist.rememberToken,
-        // );
-        // if (!isTokenValid) {
-        //   throw new UnauthorizedException('Invalid Code!');
-        // }
         const emailVarifiedAt = new Date().toISOString();
         const salt = await bcrypt.genSalt(12);
         const hashedPassword = await bcrypt.hash(
@@ -194,7 +236,7 @@ export class UserService {
 
     const payLoad: JwtPayload = {
       id: isEmailValid.id,
-      userType: isEmailValid.userType,
+      userType: isEmailValid.role,
     };
     const accessToken = await this.jwtService.sign(payLoad, {
       secret: this.configService.get('JWT_SECRET'),
@@ -202,9 +244,9 @@ export class UserService {
 
     return {
       id: isEmailValid.id,
-      name: isEmailValid.firstName + '' + isEmailValid.lastName + '',
+      name: isEmailValid.fullName,
       token: accessToken,
-      userType: isEmailValid.userType,
+      userType: isEmailValid.role,
     };
   }
 }

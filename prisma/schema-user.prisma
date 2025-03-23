@@ -10,17 +10,25 @@ datasource db {
 }
 
 model users {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  firstName String?
-  lastName  String?
-  password  String
-  userType  UserType  @default(OTHER)
+  id                    Int      @id @default(autoincrement())
+  email                 String   @unique
+  fullName              String?
+  phone                 String?
+  password              String?
+  bio                   String?
+  method                String?
+  isPhoneVeriifed       Boolean?
+  role                  RoleUSER @default(USERS)
+  two_step_verification Boolean?
+  isUserActive          Boolean?
+  photo                 String?
+
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())
 }
 
-enum UserType {
-  SUPERADMIN @map("1")
-  OTHER      @map("0")
+enum RoleUSER {
+  ADMIN     @map("ADMIN")
+  USERS     @map("USERS")
+  SUPERUSER @map("SUPERUSER")
 }
