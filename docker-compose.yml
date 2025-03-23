@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: ./apps/api-gateway/Dockerfile
       target: development
-    container_name: api-gateway
+    container_name: apis-gateways-nuzha
     restart: always
     env_file:
       - .env
@@ -83,11 +83,11 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=page-builder-db
-      - PGPORT=5434
+      - PGPORT=5435
     volumes:
       - page-builder-db-data:/var/lib/postgresql/data
     ports:
-      - '5434:5434'
+      - '5435:5435'
 
 volumes:
   user-db-data:
