@@ -10,8 +10,8 @@ services:
       - .env
     ports:
       - '4098:4098'
-    depends_on:
-      - rabbitmq
+    # depends_on:
+    #   - rabbitmq
 
   user-service:
     build:
@@ -24,7 +24,7 @@ services:
       - .env
     depends_on:
       - user-db
-      - rabbitmq
+      # - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -42,24 +42,24 @@ services:
       - .env
     depends_on:
       - page-builder-db
-      - rabbitmq
+      # - rabbitmq
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - '4002:4002'
 
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - '5673:5673'
-      - '15673:15672'
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=password
-      - RABBITMQ_NODE_PORT=5673
+  # rabbitmq:
+  #   image: rabbitmq:management
+  #   container_name: rabbitmq
+  #   restart: always
+  #   ports:
+  #     - '5673:5673'
+  #     - '15673:15672'
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=user
+  #     - RABBITMQ_DEFAULT_PASS=password
+  #     - RABBITMQ_NODE_PORT=5673
 
   user-db:
     container_name: user-db
