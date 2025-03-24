@@ -17,7 +17,7 @@ model users {
   password              String?
   bio                   String?
   method                String?
-  isPhoneVeriifed       Boolean?
+  isPhoneVerified       Boolean?
   role                  RoleUSER @default(USERS)
   two_step_verification Boolean?
   isUserActive          Boolean?

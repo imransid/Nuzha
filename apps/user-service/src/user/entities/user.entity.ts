@@ -40,10 +40,6 @@ export class User {
   @IsBoolean()
   isPhoneVerified?: boolean;
 
-  // @Field(() => RoleUSER, { defaultValue: RoleUSER.USERS })
-  // @IsOptional()
-  // role: RoleUSER;
-
   @Field(() => RoleUSER, { defaultValue: RoleUSER.USERS })
   role: keyof typeof RoleUSER;
 

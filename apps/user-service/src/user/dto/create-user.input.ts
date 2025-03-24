@@ -55,9 +55,6 @@ export class CreateUserInput {
   // @IsEnum(RoleUSER)
   role: keyof typeof RoleUSER;
 
-  // @Field(() => YesOrNo, { defaultValue: YesOrNo.NO })
-  // isWatermarkEnable: keyof typeof YesOrNo;
-
   @Field(() => Boolean, { defaultValue: false })
   @IsOptional()
   @IsBoolean()
