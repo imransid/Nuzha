@@ -10,18 +10,18 @@ datasource db {
 }
 
 model users {
-  id                    Int      @id @default(autoincrement())
-  email                 String   @unique
-  fullName              String?
-  phone                 String?
-  password              String?
-  bio                   String?
-  method                String?
-  isPhoneVerified       Boolean?
-  role                  RoleUSER @default(USERS)
-  two_step_verification Boolean?
-  isUserActive          Boolean?
-  photo                 String?
+  id                  Int      @id @default(autoincrement())
+  email               String   @unique
+  fullName            String?
+  phone               String?
+  password            String?
+  bio                 String?
+  method              String?
+  isPhoneVerified     Boolean?
+  role                RoleUSER @default(USERS)
+  twoStepVerification Boolean?
+  isUserActive        Boolean?
+  photo               String?
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())

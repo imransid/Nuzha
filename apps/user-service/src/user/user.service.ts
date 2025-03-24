@@ -27,6 +27,7 @@ import {
   deleteFileAndDirectory,
   uploadFileStream,
 } from 'utils/file-upload.util';
+import { StandardResponse } from './dto/standard-response.dto';
 
 @Injectable()
 export class UserService {
@@ -37,7 +38,7 @@ export class UserService {
     private configService: ConfigService,
     private readonly mailService: MailerService,
   ) {}
-  async create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput): Promise<StandardResponse> {
     const { email, password } = createUserInput;
     let user = await this.prismaService.users.findUnique({ where: { email } });
     if (user) {
@@ -45,14 +46,19 @@ export class UserService {
     }
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
+    var filePath = '';
 
-    const imageFile: any = await createUserInput.photoUpload;
-    const fileName = `${Date.now()}_${imageFile.filename}`;
-    const filePath = await uploadFileStream(
-      imageFile.createReadStream,
-      this.uploadDir,
-      fileName,
-    );
+    if (createUserInput?.photoUpload) {
+      const imageFile: any = await createUserInput.photoUpload;
+      const fileName = `${Date.now()}_${imageFile.filename}`;
+      filePath = await uploadFileStream(
+        imageFile.createReadStream,
+        this.uploadDir,
+        fileName,
+      );
+    }
+
+    delete createUserInput.photoUpload;
 
     user = await this.prismaService.users.create({
       data: {

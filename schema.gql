@@ -4,24 +4,25 @@
 
 type User {
   id: Int!
-  firstName: String
-  lastName: String
   email: String!
-  password: String!
-  userType: UserType!
-  createdAt: DateTime!
-  updateAt: DateTime
+  fullName: String
+  phone: String
+  password: String
+  bio: String
+  method: String
+  isPhoneVerified: Boolean
+  role: role!
+  twoStepVerification: Boolean
+  isUserActive: Boolean
+  photo: String
 }
 
-enum UserType {
-  SUPERADMIN
-  OTHER
+"""User role enum"""
+enum role {
+  ADMIN
+  USERS
+  SUPERUSER
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type LoginAttempt {
   email: String!
@@ -37,29 +38,9 @@ type Auth {
   loginAttempt: LoginAttempt
 }
 
-type Question {
-  id: Int!
-  questionText: String!
-  correctAnswer: String!
-  answers: [Answer!]!
-}
-
-type Answer {
-  id: Int!
-  answerText: String!
-  questionId: Int!
-}
-
-type QuestionResponse {
-  id: Int!
-  questionText: String!
-  answers: [String!]!
-  correctAnswer: String!
-}
-
-type StandardResponse {
-  success: Boolean!
-  message: String
+enum UserType {
+  SUPERADMIN
+  OTHER
 }
 
 type Campaign {
@@ -69,24 +50,12 @@ type Campaign {
   url: String!
 }
 
-type Report {
-  id: Int!
-  email: String!
-  transactionId: String!
-  mobile: String!
-  result: String!
-}
-
 """Upload files"""
 scalar Upload
 
 type Query {
   users(page: Float!, limit: Float!): [User!]!
   user(id: Int!): User!
-  findAllQuestions(page: Int, limit: Int): [QuestionResponse!]!
-  findQuestion(id: Int!): Question!
-  findAllReport(page: Int, limit: Int): [Report!]!
-  findReport(id: Int!): Report!
   findAllCampaigns: [Campaign!]!
   findCampaignById(id: Int!): Campaign
 }
@@ -98,24 +67,24 @@ type Mutation {
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(id: Int!): User!
   login(data: LoginInput!): Auth!
-  createQuestion(createQuestionInput: CreateQuestionInput!): Question!
-  updateQuestion(id: Int!, updateQuestionInput: UpdateQuestionInput!): Question!
-  removeQuestion(id: Int!): StandardResponse!
-  removeAnswer(id: Int!): StandardResponse!
-  createReport(createReportInput: CreateReportInput!): Report!
-  updateReport(id: Int!, updateReportInput: UpdateReportInput!): Report!
-  removeReport(id: Int!): StandardResponse!
   createCampaign(data: CreateCampaignDto!): Campaign!
   updateCampaign(id: Int!, data: UpdateCampaignDto!): Campaign!
   removeCampaign(id: Int!): Campaign!
 }
 
 input CreateUserInput {
-  firstName: String!
-  lastName: String!
   email: String!
   password: String!
-  userType: UserType! = OTHER
+  phone: String
+  bio: String
+  method: String
+  isPhoneVerified: Boolean! = false
+  role: role! = USERS
+  twoStepVerification: Boolean! = false
+  isUserActive: Boolean! = true
+
+  """Input for the Photo Image."""
+  photoUpload: Upload
 }
 
 input ChangePasswordInput {
@@ -125,45 +94,24 @@ input ChangePasswordInput {
 }
 
 input UpdateUserInput {
-  firstName: String!
-  lastName: String!
   email: String
   password: String
-  userType: UserType = OTHER
+  phone: String
+  bio: String
+  method: String
+  isPhoneVerified: Boolean = false
+  role: role = USERS
+  twoStepVerification: Boolean = false
+  isUserActive: Boolean = true
+
+  """Input for the Photo Image."""
+  photoUpload: Upload
   id: Int!
 }
 
 input LoginInput {
   email: String!
   password: String!
-}
-
-input CreateQuestionInput {
-  questionText: String!
-  correctAnswer: String!
-  answers: [String!]!
-}
-
-input UpdateQuestionInput {
-  questionText: String
-  answers: [String!]
-  id: Int!
-  correctAnswer: String
-}
-
-input CreateReportInput {
-  email: String!
-  transactionId: String!
-  mobile: String!
-  result: String!
-}
-
-input UpdateReportInput {
-  email: String
-  transactionId: String
-  mobile: String
-  result: String
-  id: Int!
 }
 
 input CreateCampaignDto {

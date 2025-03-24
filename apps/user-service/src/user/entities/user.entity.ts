@@ -58,9 +58,4 @@ export class User {
   @IsString()
   photo?: string;
 
-  // @Field()
-  // createdAt: Date;
-
-  // @Field()
-  // updatedAt: Date;
 }

@@ -5,15 +5,17 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ChangePasswordInput } from './dto/change-password.input';
 import { LoginInput } from './dto/login.input';
-import { Auth, GCode } from './entities/auth.entity';
+import { Auth } from './entities/auth.entity';
+import { StandardResponse } from './dto/standard-response.dto';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Mutation(() => User)
+  @Mutation(() => StandardResponse)
   async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return await this.userService.create(createUserInput);
+    let res = await this.userService.create(createUserInput);
+    return res;
   }
 
   @Query(() => [User], { name: 'users' })
