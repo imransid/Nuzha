@@ -18,18 +18,6 @@ import { Upload } from 'scalars/upload.scalar';
 @InputType()
 export class CreateUserInput {
   @Field()
-  @IsOptional()
-  @IsAlpha()
-  @Length(0, 255)
-  firstName?: string;
-
-  @Field()
-  @IsOptional()
-  @IsAlpha()
-  @Length(0, 255)
-  lastName?: string;
-
-  @Field()
   @IsEmail()
   email: string;
 
