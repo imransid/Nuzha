@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { UserType } from '../../prisma/user-type.enum';
+import { RoleUSER } from '../../prisma/role.enum';
 
 @ObjectType()
 export class LoginAttempt {
@@ -23,11 +24,11 @@ export class Auth {
   @Field()
   token: string;
 
-  @Field(() => UserType, { defaultValue: UserType.OTHER })
-  userType: keyof typeof UserType;
 
-  @Field(() => LoginAttempt, { nullable: true }) // Nullable in case no login attempts exist
-  loginAttempt?: LoginAttempt;
+
+  @Field(() => RoleUSER, { defaultValue: RoleUSER.USERS }) 
+  role: keyof typeof RoleUSER;
+
 }
 
 @ObjectType()
