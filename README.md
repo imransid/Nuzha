@@ -133,8 +133,8 @@ http://localhost:4099/graphql
 
 docker exec 604267d8768a npx prisma generate --schema=./prisma/schema-page-builder.prisma
 docker exec 5f8981dba94f npx prisma migrate deploy --schema=./prisma/schema-user.prisma
-docker exec 33e0094e4b54 npx prisma generate --schema=./prisma/schema-user.prisma
-docker exec 33e0094e4b54 npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
+docker exec afcd82b7f75b npx prisma generate --schema=./prisma/schema-user.prisma
+docker exec afcd82b7f75b npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
 docker exec 604267d8768a npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
 
 sudo docker stop 37566e30ab49 5bea497ccc3d ae24fb48a4e4 51ab77b13e37 0a560d186910

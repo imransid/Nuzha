@@ -24,11 +24,8 @@ export class Auth {
   @Field()
   token: string;
 
-
-
-  @Field(() => RoleUSER, { defaultValue: RoleUSER.USERS }) 
+  @Field(() => RoleUSER, { defaultValue: RoleUSER.USERS })
   role: keyof typeof RoleUSER;
-
 }
 
 @ObjectType()

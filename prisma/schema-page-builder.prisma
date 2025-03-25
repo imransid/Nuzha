@@ -9,12 +9,38 @@ datasource db {
   url      = env("PAGE_BUILDER_DATABASE_URI")
 }
 
-model campaign {
-  id       Int    @id @default(autoincrement())
-  campaign String
-  code     String
-  url      String
+model Property {
+  id            Int              @id @default(autoincrement())
+  title         String
+  price         String
+  category      String
+  description   String
+  facility      String[] // Array of facilities
+  location      String
+  longitudeCode String
+  latitudeCode  String
+  country       String
+  street        String
+  city          String
+  postcode      String
+  propertyImage propertyPhotos[]
+  isActive      Boolean          @default(true)
+  addedBy       String // User ID (Consider making it a relation)
+  propertyType  String
+  others        Json? // Stores additional dynamic property details
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
-  createdAt DateTime  @default(now())
-  updateAt  DateTime? @default(now())
+  @@index([category])
+  @@index([location])
+  @@index([isActive])
+}
+
+model propertyPhotos {
+  id         Int       @id @default(autoincrement())
+  propertyId Int
+  url        String
+  Property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updateAt   DateTime? @default(now())
 }

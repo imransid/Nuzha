@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-
-import { CampaignService } from './campaign/campaign.service';
-import { CampaignResolver } from './campaign/campaign.resolver';
 import { PrismaModule } from '../../../../prisma/prisma.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PropertyResolver } from './property/property.resolver';
+import { PropertyService } from './property/property.service';
 
 @Module({
   imports: [
@@ -20,6 +19,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
     }),
   ],
-  providers: [JwtService, ConfigService, CampaignService, CampaignResolver],
+  providers: [JwtService, ConfigService, PropertyResolver, PropertyService],
 })
 export class ComponentsModule {}

@@ -1,0 +1,237 @@
+import {
+  HttpException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { PrismaPageBuilderService } from '../../../../../prisma/prisma-page-builder.service';
+import { CreatePropertyDto, UpdatePropertyDto } from '../dto/property.dto';
+import { PropertyPaginatedResult } from '../dto/property.dto';
+import { Property } from '../entities/property.entity';
+
+import {
+  deleteFileAndDirectory,
+  uploadFileStream,
+} from 'utils/file-upload.util';
+import { join } from 'path';
+
+@Injectable()
+export class PropertyService {
+  constructor(private readonly prisma: PrismaPageBuilderService) {}
+  private logger = new Logger('Latest Property  service');
+
+  private uploadDir = join(process.env.UPLOAD_DIR, `Property`, 'files');
+
+  async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+    try {
+      const imagePaths = createPropertyDto?.photosPropertyImage.map(
+        async (image, index) => {
+          const imageFile: any = await image;
+          const fileName = `${Date.now()}_${index}_${imageFile.filename}`;
+          const filePath = await uploadFileStream(
+            imageFile.createReadStream,
+            this.uploadDir,
+            fileName,
+          );
+          return filePath;
+        },
+      );
+      const propertyImage = await Promise.all(imagePaths);
+
+      const createdProperty = this.prisma.property.create({
+        data: {
+          ...createPropertyDto,
+          others: createPropertyDto.others ?? {},
+          propertyImage: {
+            create: propertyImage.map((url) => ({ url })),
+          },
+        },
+        include: { propertyImage: true },
+      });
+
+      this.logger.log(`Latest createdProperty Data: ${createdProperty}`);
+      return createdProperty;
+    } catch (e) {
+      throw new HttpException(`Error Creating Latest Notice: ${e}`, 500);
+    }
+  }
+
+  async findAll(page = 1, limit = 10): Promise<PropertyPaginatedResult> {
+    const skip = (page - 1) * limit;
+
+    const [properties, totalCount] = await Promise.all([
+      this.prisma.property.findMany({
+        skip,
+        take: limit,
+        include: { propertyImage: true },
+        orderBy: { createdAt: 'desc' },
+      }) || [], // Ensure it's always an array
+      this.prisma.property.count(),
+    ]);
+
+    return {
+      properties: Array.isArray(properties) ? properties : [], // Safety check
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+      totalCount,
+    };
+  }
+
+  async findOne(id: number): Promise<Property> {
+    const property = await this.prisma.property.findUnique({
+      where: { id },
+      include: { propertyImage: true },
+    });
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+    return property;
+  }
+
+  async update(
+    id: number,
+    updatePropertyInput: UpdatePropertyDto,
+  ): Promise<Property> {
+    try {
+      const existingProperty: Property = await this.prisma.property.findUnique({
+        where: { id },
+        include: { propertyImage: true }, // Include images for deletion check
+      });
+
+      if (!existingProperty) {
+        throw new NotFoundException(`Property with ID ${id} not found`);
+      }
+
+      let propertyUpdateData = {
+        ...updatePropertyInput,
+      };
+
+      // ✅ DELETE OLD IMAGES FROM STORAGE & DATABASE
+      if (updatePropertyInput.photosPropertyImage?.length) {
+        if (existingProperty.propertyImage?.length) {
+          // Remove old image files
+          for (const image of existingProperty.propertyImage) {
+            const prevFilePath = image.url.replace(
+              `${process.env.BASE_URL}/`,
+              '',
+            );
+            deleteFileAndDirectory(prevFilePath);
+          }
+
+          // ✅ Delete old images from the database
+          await this.prisma.propertyPhotos.deleteMany({
+            where: { propertyId: id },
+          });
+        }
+
+        // ✅ UPLOAD NEW IMAGES
+        const imagePaths = await Promise.all(
+          updatePropertyInput.photosPropertyImage.map(async (image, index) => {
+            const imageFile: any = image;
+            const fileName = `${Date.now()}_${index}_${imageFile.filename}`;
+            const filePath = await uploadFileStream(
+              imageFile.createReadStream,
+              this.uploadDir,
+              fileName,
+            );
+            return { url: filePath, propertyId: id };
+          }),
+        );
+
+        // ✅ INSERT NEW IMAGES INTO DATABASE
+        await this.prisma.propertyPhotos.createMany({
+          data: imagePaths,
+        });
+      }
+
+      // ✅ ENSURE `others` FIELD UPDATES PROPERLY
+      if (updatePropertyInput.others) {
+        propertyUpdateData = {
+          ...propertyUpdateData,
+          others: updatePropertyInput.others.length
+            ? updatePropertyInput.others
+            : [],
+        };
+      }
+
+      // ✅ UPDATE PROPERTY IN DATABASE
+      return this.prisma.property.update({
+        where: { id },
+        data: propertyUpdateData,
+        include: { propertyImage: true }, // Ensure updated images are returned
+      });
+    } catch (error) {
+      throw new HttpException(`Error Updating Property: ${error.message}`, 500);
+    }
+  }
+
+  async remove(id: number): Promise<Property> {
+    // ✅ Check if the property exists
+    const existingProperty = await this.prisma.property.findUnique({
+      where: { id },
+      include: { propertyImage: true }, // ✅ Include images for deletion
+    });
+
+    if (!existingProperty) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    // ✅ Delete associated images from storage
+    for (const image of existingProperty.propertyImage) {
+      const prevFilePath = image.url.replace(`${process.env.BASE_URL}/`, '');
+      deleteFileAndDirectory(prevFilePath);
+    }
+
+    // ✅ Delete related property images first
+    await this.prisma.propertyPhotos.deleteMany({
+      where: { propertyId: id },
+    });
+
+    // ✅ Delete the property (this step doesn't require the propertyImage field)
+    return existingProperty;
+  }
+
+  async search(
+    query: string,
+    page = 1,
+    limit = 10,
+  ): Promise<PropertyPaginatedResult> {
+    if (!query.trim()) {
+      return new PropertyPaginatedResult([], 0, page, 0);
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [properties, totalCount] = await Promise.all([
+      this.prisma.property.findMany({
+        where: {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { category: { contains: query, mode: 'insensitive' } }, // ✅ Search by category too
+            { city: { contains: query, mode: 'insensitive' } }, // ✅ Search by city
+          ],
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' }, // ✅ Sort latest properties first
+        include: { propertyImage: true },
+      }),
+      this.prisma.property.count({
+        where: {
+          OR: [
+            { title: { contains: query, mode: 'insensitive' } },
+            { category: { contains: query, mode: 'insensitive' } },
+            { city: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+      }),
+    ]);
+
+    return new PropertyPaginatedResult(
+      properties,
+      Math.ceil(totalCount / limit),
+      page,
+      totalCount,
+    );
+  }
+}
