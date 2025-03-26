@@ -119,7 +119,7 @@ export class CreatePropertyDto {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  others?: string; // Array of objects for extra metadata
+  otherItem?: string; // Array of objects for extra metadata
 }
 
 @InputType()

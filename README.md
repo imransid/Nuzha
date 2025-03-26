@@ -131,11 +131,13 @@ http://localhost:4099/graphql
    ```
 4. Create a Pull Request for review.
 
-docker exec b9ba439b847e npx prisma generate --schema=./prisma/schema-page-builder.prisma
+docker exec 68566676fe9f npx prisma generate --schema=./prisma/schema-page-builder.prisma
 docker exec 5f8981dba94f npx prisma migrate deploy --schema=./prisma/schema-user.prisma
-docker exec cf939d517e5e npx prisma generate --schema=./prisma/schema-user.prisma
-docker exec cf939d517e5e npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
-docker exec b9ba439b847e npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
+docker exec c69154d8738d npx prisma generate --schema=./prisma/schema-user.prisma
+docker exec c69154d8738d npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
+
+docker exec 68566676fe9f npx prisma generate --schema=./prisma/schema-page-builder.prisma
+docker exec 68566676fe9f npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
 
 sudo docker stop 37566e30ab49 5bea497ccc3d ae24fb48a4e4 51ab77b13e37 0a560d186910
 sudo docker rm 37566e30ab49 5bea497ccc3d ae24fb48a4e4 51ab77b13e37 0a560d186910
