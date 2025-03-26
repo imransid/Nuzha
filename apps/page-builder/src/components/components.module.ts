@@ -4,6 +4,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PropertyResolver } from './property/property.resolver';
 import { PropertyService } from './property/property.service';
+import { BookingResolver } from './booking/booking.resolver';
+import { BookingService } from './booking/booking.service';
 
 @Module({
   imports: [
@@ -19,7 +21,14 @@ import { PropertyService } from './property/property.service';
       }),
     }),
   ],
-  providers: [JwtService, ConfigService, PropertyResolver, PropertyService],
+  providers: [
+    JwtService,
+    ConfigService,
+    PropertyResolver,
+    PropertyService,
+    BookingResolver,
+    BookingService,
+  ],
 
   //PropertyService
 })

@@ -39,7 +39,7 @@ jobs:
       - name: Run tests
         run: yarn test --passWithNoTests --verbose
 
-      - name: Run Prisma
+      - name: Run Prisma (User Service)
         run: npx prisma generate --schema=./prisma/schema-user.prisma
 
       - name: Run Prisma (Page Builder)
@@ -90,5 +90,19 @@ jobs:
             git pull origin main
             docker compose down
             docker compose pull
-            docker compose up --build
+            docker compose up --build -d
             docker system prune -af
+
+            # Wait for services to be fully up
+            sleep 10
+
+            # Fetch container IDs dynamically
+            USER_CONTAINER=$(docker ps -qf "name=user-service")
+            PAGE_BUILDER_CONTAINER=$(docker ps -qf "name=page-builder")
+
+            # Run Prisma commands inside containers
+            docker exec $USER_CONTAINER npx prisma generate --schema=./prisma/schema-user.prisma
+            docker exec $USER_CONTAINER npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
+
+            docker exec $PAGE_BUILDER_CONTAINER npx prisma generate --schema=./prisma/schema-page-builder.prisma
+            docker exec $PAGE_BUILDER_CONTAINER npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma

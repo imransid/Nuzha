@@ -9,8 +9,17 @@ datasource db {
   url      = env("PAGE_BUILDER_DATABASE_URI")
 }
 
+model propertyPhotos {
+  id         Int       @id @default(autoincrement())
+  propertyId Int
+  url        String
+  Property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updateAt   DateTime? @default(now())
+}
+
 model Property {
-  id            Int              @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   title         String
   price         String?
   propertyType  String?
@@ -24,16 +33,58 @@ model Property {
   street        String?
   city          String?
   postcode      String?
-  isActive      Boolean          @default(false)
+  isActive      Boolean @default(false)
   otherItem     String?
-  propertyImage propertyPhotos[] // Relationship to the images
+
+  propertyImage propertyPhotos[]
+
+  booking Booking?
 }
 
-model propertyPhotos {
-  id         Int       @id @default(autoincrement())
-  propertyId Int
-  url        String
-  Property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdAt  DateTime  @default(now())
-  updateAt   DateTime? @default(now())
+model Booking {
+  id                 Int       @id @default(autoincrement())
+  booking_date_start DateTime
+  booking_date_end   DateTime
+  adult_guest        String
+  children           String
+  cost               String
+  createdAt          DateTime  @default(now())
+  updateAt           DateTime? @default(now())
+
+  status Boolean?
+  userId String?
+
+  contactInfo ContactInfo[]
+  paymentInfo PaymentInfo[]
+
+  propertyId Int?      @unique
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+model PaymentInfo {
+  id             Int       @id @default(autoincrement())
+  paymentInfo    String?
+  transactionID  String?
+  cardholderName String?
+  cardName       String?
+  experienceDate String?
+  userId         Int
+  propertyId     Int
+  createdAt      DateTime  @default(now())
+  updateAt       DateTime? @default(now())
+
+  Booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId Int?
+}
+
+model ContactInfo {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+
+  Booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId Int?
 }
