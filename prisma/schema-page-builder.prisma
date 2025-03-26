@@ -12,28 +12,21 @@ datasource db {
 model Property {
   id            Int              @id @default(autoincrement())
   title         String
-  price         String
-  category      String
-  description   String
-  facility      String[] // Array of facilities
-  location      String
-  longitudeCode String
-  latitudeCode  String
-  country       String
-  street        String
-  city          String
-  postcode      String
-  propertyImage propertyPhotos[]
-  isActive      Boolean          @default(true)
-  addedBy       String // User ID (Consider making it a relation)
-  propertyType  String
-  others        Json? // Stores additional dynamic property details
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  @@index([category])
-  @@index([location])
-  @@index([isActive])
+  price         String?
+  propertyType  String?
+  category      String?
+  description   String?
+  facility      String?
+  location      String?
+  longitudeCode String?
+  latitudeCode  String?
+  country       String?
+  street        String?
+  city          String?
+  postcode      String?
+  isActive      Boolean          @default(false)
+  others        Json?
+  propertyImage propertyPhotos[] // Relationship to the images
 }
 
 model propertyPhotos {

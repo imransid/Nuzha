@@ -5,6 +5,7 @@ import { Property } from '../entities/property.entity';
 import { NotFoundException } from '@nestjs/common';
 import { GraphQLException } from 'exceptions/graphql-exception';
 import { PropertyPaginatedResult } from '../dto/property.dto';
+import { StandardResponse } from '../entities/standard-response.dto';
 
 @Resolver(() => Property)
 export class PropertyResolver {
@@ -12,10 +13,14 @@ export class PropertyResolver {
 
   @Mutation(() => Property)
   async createProperty(
-    @Args('createPropertyInput') createPropertyInput: CreatePropertyDto,
-  ): Promise<Property> {
+    @Args('createPropertyDto') createPropertyDto: CreatePropertyDto,
+  ): Promise<StandardResponse> {
     try {
-      return await this.propertyService.create(createPropertyInput);
+      let res = await this.propertyService.create(createPropertyDto);
+      return {
+        message: 'Property added successfully!',
+        data: res,
+      };
     } catch (error) {
       throw new GraphQLException(
         'Failed to create property',

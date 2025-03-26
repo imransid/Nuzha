@@ -7,68 +7,120 @@ import {
 } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Property } from '../entities/property.entity';
-import { Upload } from '../../../../../scalars/upload.scalar';
+import { Upload } from 'scalars/upload.scalar';
 import { pathFinderMiddlewareForArrayOfString } from 'middleware/pathFinderMiddleware';
+
+import {
+  IsAlpha,
+  IsEmail,
+  IsOptional,
+  Length,
+  Matches,
+  MaxLength,
+  MinLength,
+  IsBoolean,
+  IsEnum,
+  IsString,
+  IsPhoneNumber,
+} from 'class-validator';
+import { RoleUSER } from '../../../../user-service/src/prisma/role.enum';
 
 @InputType()
 export class CreatePropertyDto {
-  @Field()
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
   title: string;
 
-  @Field(() => Int)
-  price: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  price?: string;
 
-  @Field()
-  category: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  propertyType?: string;
 
-  @Field()
-  description: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  category?: string;
 
-  @Field(() => [String])
-  facility: string[];
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  description?: string;
 
-  @Field()
-  location: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  facility?: string;
 
-  @Field()
-  longitudeCode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  location?: string;
 
-  @Field()
-  latitudeCode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  longitudeCode?: string;
 
-  @Field()
-  country: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  latitudeCode?: string;
 
-  @Field()
-  street: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  country?: string;
 
-  @Field()
-  city: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  street?: string;
 
-  @Field()
-  postcode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  city?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  postcode?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 
   @Field(() => [Upload], {
     nullable: true,
-    description: 'Input for the attachment files.',
-    middleware: [pathFinderMiddlewareForArrayOfString],
+    description: 'Input for the Photo Image.',
   })
-  photosPropertyImage?: Upload[];
-
-  @Field()
-  isActive: boolean;
-
-  @Field()
-  addedBy: string; // User ID
-
-  @Field()
-  propertyType: string;
+  photoUpload: Upload[];
 
   @Field(() => [GraphQLJSONObject], {
     nullable: true,
     description: 'Additional structured property details',
   })
-  others?: any; // Array of objects for extra metadata
+  others?: any[]; // Array of objects for extra metadata
 }
 
 @InputType()

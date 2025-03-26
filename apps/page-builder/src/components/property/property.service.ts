@@ -24,7 +24,7 @@ export class PropertyService {
 
   async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
     try {
-      const imagePaths = createPropertyDto?.photosPropertyImage.map(
+      const imagePaths = createPropertyDto?.photoUpload.map(
         async (image, index) => {
           const imageFile: any = await image;
           const fileName = `${Date.now()}_${index}_${imageFile.filename}`;
@@ -38,7 +38,9 @@ export class PropertyService {
       );
       const propertyImage = await Promise.all(imagePaths);
 
-      const createdProperty = this.prisma.property.create({
+      delete createPropertyDto.photoUpload;
+
+      const createdProperty = await this.prisma.property.create({
         data: {
           ...createPropertyDto,
           others: createPropertyDto.others ?? {},
@@ -52,7 +54,7 @@ export class PropertyService {
       this.logger.log(`Latest createdProperty Data: ${createdProperty}`);
       return createdProperty;
     } catch (e) {
-      throw new HttpException(`Error Creating Latest Notice: ${e}`, 500);
+      throw new HttpException(`Error Creating Latest Property: ${e}`, 500);
     }
   }
 
@@ -64,7 +66,6 @@ export class PropertyService {
         skip,
         take: limit,
         include: { propertyImage: true },
-        orderBy: { createdAt: 'desc' },
       }) || [], // Ensure it's always an array
       this.prisma.property.count(),
     ]);
@@ -107,8 +108,8 @@ export class PropertyService {
       };
 
       // ✅ DELETE OLD IMAGES FROM STORAGE & DATABASE
-      if (updatePropertyInput.photosPropertyImage?.length) {
-        if (existingProperty.propertyImage?.length) {
+      if (updatePropertyInput.photoUpload?.length) {
+        if (existingProperty?.propertyImage?.length) {
           // Remove old image files
           for (const image of existingProperty.propertyImage) {
             const prevFilePath = image.url.replace(
@@ -126,7 +127,7 @@ export class PropertyService {
 
         // ✅ UPLOAD NEW IMAGES
         const imagePaths = await Promise.all(
-          updatePropertyInput.photosPropertyImage.map(async (image, index) => {
+          updatePropertyInput.photoUpload.map(async (image, index) => {
             const imageFile: any = image;
             const fileName = `${Date.now()}_${index}_${imageFile.filename}`;
             const filePath = await uploadFileStream(
@@ -155,7 +156,7 @@ export class PropertyService {
       }
 
       // ✅ UPDATE PROPERTY IN DATABASE
-      return this.prisma.property.update({
+      return await this.prisma.property.update({
         where: { id },
         data: propertyUpdateData,
         include: { propertyImage: true }, // Ensure updated images are returned
@@ -213,7 +214,6 @@ export class PropertyService {
         },
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' }, // ✅ Sort latest properties first
         include: { propertyImage: true },
       }),
       this.prisma.property.count({

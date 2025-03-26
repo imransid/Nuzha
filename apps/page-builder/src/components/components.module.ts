@@ -20,5 +20,7 @@ import { PropertyService } from './property/property.service';
     }),
   ],
   providers: [JwtService, ConfigService, PropertyResolver, PropertyService],
+
+  //PropertyService
 })
 export class ComponentsModule {}

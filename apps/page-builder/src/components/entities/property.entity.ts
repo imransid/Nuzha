@@ -1,78 +1,129 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { pathFinderMiddleware } from 'middleware/pathFinderMiddleware';
 import { GraphQLJSONObject } from 'graphql-type-json';
+import {
+  IsOptional,
+  IsBoolean,
+  IsString,
+  IsArray,
+  MaxLength,
+  IsNumber,
+} from 'class-validator';
 
 @ObjectType()
 export class Property {
-  @Field(() => Int)
-  id: number;
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 
-  @Field()
-  title: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  title?: string;
 
-  @Field(() => Int)
-  price: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  price?: string;
 
-  @Field()
-  category: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  category?: string;
 
-  @Field()
-  description: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  description?: string;
 
-  @Field(() => [String])
-  facility: string[];
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsArray()
+  facility?: string;
 
-  @Field()
-  location: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  location?: string;
 
-  @Field()
-  longitudeCode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  longitudeCode?: string;
 
-  @Field()
-  latitudeCode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  latitudeCode?: string;
 
-  @Field()
-  country: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  country?: string;
 
-  @Field()
-  street: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  street?: string;
 
-  @Field()
-  city: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  city?: string;
 
-  @Field()
-  postcode: string;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  postcode?: string;
 
-  @Field(() => [PropertyPhotos])
-  propertyImage: PropertyPhotos[]; // Array of image URLs
+  @Field(() => [PropertyPhotos], { nullable: true })
+  @IsOptional()
+  propertyImage?: PropertyPhotos[];
 
-  @Field()
-  isActive: boolean;
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 
-  @Field()
-  addedBy: string; // User ID
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  propertyType?: string;
 
-  @Field()
-  propertyType: string;
-
-  @Field(() => GraphQLJSONObject, { nullable: true }) // ✅ Fix type
-  others?: any;
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  @IsOptional()
+  others?: any; // Structured JSON for additional details
 }
 
 @ObjectType()
 export class PropertyPhotos {
-  @Field(() => Int)
-  id: number;
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsNumber()
+  id?: number;
 
-  @Field(() => Int)
-  propertyId: number;
-
-  @Field({ middleware: [pathFinderMiddleware] })
-  url: string;
-
-  @Field()
-  createdAt: Date;
+  @Field(() => Int, { nullable: true })
+  @IsOptional()
+  @IsNumber()
+  propertyId?: number;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  url?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  createdAt?: Date;
+
+  @Field({ nullable: true })
+  @IsOptional()
   updateAt?: Date;
 }
