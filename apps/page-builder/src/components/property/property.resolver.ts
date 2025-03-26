@@ -14,7 +14,7 @@ export class PropertyResolver {
   @Mutation(() => StandardResponse)
   async createProperty(
     @Args('createPropertyDto') createPropertyDto: CreatePropertyDto,
-  ): Promise<StandardResponse> {
+  ) {
     try {
       let res = await this.propertyService.create(createPropertyDto);
       return {
