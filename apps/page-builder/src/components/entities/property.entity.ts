@@ -100,7 +100,7 @@ export class Property {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  others?: any; // Structured JSON for additional details
+  others?: string; // Structured JSON for additional details
 }
 
 @ObjectType()
