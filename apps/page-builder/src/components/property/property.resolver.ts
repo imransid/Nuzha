@@ -5,13 +5,13 @@ import { Property } from '../entities/property.entity';
 import { NotFoundException } from '@nestjs/common';
 import { GraphQLException } from 'exceptions/graphql-exception';
 import { PropertyPaginatedResult } from '../dto/property.dto';
-import { StandardResponse } from '../entities/standard-response.dto';
+import { StandardResponseProperty } from '../entities/standard-response-entity';
 
 @Resolver(() => Property)
 export class PropertyResolver {
   constructor(private readonly propertyService: PropertyService) {}
 
-  @Mutation(() => StandardResponse)
+  @Mutation(() => StandardResponseProperty)
   async createProperty(
     @Args('createPropertyDto') createPropertyDto: CreatePropertyDto,
   ) {

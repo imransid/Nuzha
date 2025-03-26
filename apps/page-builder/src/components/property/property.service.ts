@@ -43,7 +43,7 @@ export class PropertyService {
       const createdProperty = await this.prisma.property.create({
         data: {
           ...createPropertyDto,
-          others: createPropertyDto.others ?? {},
+          otherItem: createPropertyDto.otherItem,
           propertyImage: {
             create: propertyImage.map((url) => ({ url })),
           },
@@ -146,12 +146,10 @@ export class PropertyService {
       }
 
       // ✅ ENSURE `others` FIELD UPDATES PROPERLY
-      if (updatePropertyInput.others) {
+      if (updatePropertyInput.otherItem) {
         propertyUpdateData = {
           ...propertyUpdateData,
-          others: updatePropertyInput.others.length
-            ? updatePropertyInput.others
-            : [],
+          otherItem: updatePropertyInput.otherItem,
         };
       }
 

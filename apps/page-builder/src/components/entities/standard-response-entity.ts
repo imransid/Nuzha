@@ -1,9 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Property } from './property.entity';
 
 @ObjectType()
-export class StandardResponse {
+export class StandardResponseProperty {
   @Field()
-  success: boolean;
+  data: Property;
 
   @Field({ nullable: true })
   message?: string;
