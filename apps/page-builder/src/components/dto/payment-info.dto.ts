@@ -34,7 +34,7 @@ export class CreatePaymentInfoDto {
 
   @Field()
   @IsInt()
-  propertyId: number;
+  propertyDataId: number;
 
   @Field({ nullable: true })
   @IsOptional()
@@ -85,7 +85,7 @@ export class UpdatePaymentInfoDto {
   @Field({ nullable: true })
   @IsOptional()
   @IsInt()
-  propertyId?: number;
+  propertyDataId?: number;
 
   @Field({ nullable: true })
   @IsOptional()

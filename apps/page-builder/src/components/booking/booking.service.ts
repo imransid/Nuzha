@@ -19,13 +19,15 @@ export class BookingService {
   constructor(private readonly prisma: PrismaPageBuilderService) {}
 
   // Create a new booking
-  async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+  // async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+  async create(createBookingDto: CreateBookingDto): Promise<any> {
     try {
       const { paymentInfo, contactInfo, ...bookingData } = createBookingDto;
 
       // Create the booking
       const booking = await this.prisma.booking.create({
         data: {
+          propertyDataId: createBookingDto.propertyDataId,
           ...bookingData,
           contactInfo: {
             create: contactInfo?.map((info) => ({
@@ -36,6 +38,8 @@ export class BookingService {
           },
           paymentInfo: {
             create: paymentInfo?.map((info) => ({
+              userId: info.userId,
+              propertyId: createBookingDto.propertyDataId,
               paymentInfo: info.paymentInfo,
               transactionID: info.transactionID,
               cardholderName: info.cardholderName,
@@ -43,10 +47,6 @@ export class BookingService {
               experienceDate: info.experienceDate,
             })),
           },
-        },
-        include: {
-          contactInfo: true,
-          paymentInfo: true,
         },
       });
 
@@ -58,11 +58,13 @@ export class BookingService {
   }
 
   // Fetch all bookings with pagination
+
   async findAll(page: number, limit: number): Promise<PaginatedBookingResult> {
     try {
       const skip = (page - 1) * limit;
 
-      const [bookings, totalCount] = await this.prisma.booking.findMany({
+      // Fetch bookings with pagination
+      const bookings = await this.prisma.booking.findMany({
         skip,
         take: limit,
         include: {
@@ -71,9 +73,26 @@ export class BookingService {
         },
       });
 
+      // Ensure the paymentInfo bookingId is transformed to a string if needed
+      const transformedBookings = bookings.map((booking) => ({
+        ...booking,
+        paymentInfo: booking.paymentInfo.map((payment) => ({
+          ...payment,
+          bookingId: String(payment.bookingId), // Ensure bookingId is a string
+        })),
+      }));
+
+      // Get the total count of bookings
+      const totalCount = await this.prisma.booking.count();
+
       const totalPages = Math.ceil(totalCount / limit);
 
-      return new PaginatedBookingResult(bookings, totalPages, page, totalCount);
+      return new PaginatedBookingResult(
+        transformedBookings,
+        totalPages,
+        page,
+        totalCount,
+      );
     } catch (error) {
       this.logger.error('Error fetching bookings', error);
       throw new HttpException('Error fetching bookings', 500);
@@ -95,7 +114,15 @@ export class BookingService {
         throw new NotFoundException(`Booking with ID ${id} not found`);
       }
 
-      return booking;
+      const transformedBooking = {
+        ...booking,
+        paymentInfo: booking.paymentInfo.map((payment) => ({
+          ...payment,
+          bookingId: String(payment.bookingId), // Ensure bookingId is a string
+        })),
+      };
+
+      return transformedBooking;
     } catch (error) {
       this.logger.error('Error fetching booking', error);
       throw new HttpException('Error fetching booking', 500);
@@ -103,6 +130,7 @@ export class BookingService {
   }
 
   // Update a booking
+
   async update(
     id: number,
     updateBookingDto: UpdateBookingDto,
@@ -116,9 +144,20 @@ export class BookingService {
         throw new NotFoundException(`Booking with ID ${id} not found`);
       }
 
+      // Construct the update data for the booking
+      const updateData: any = { ...updateBookingDto };
+
+      // If propertyDataId is provided, make sure it's set as a relation connect
+      if (updateBookingDto.propertyDataId) {
+        updateData.propertyData = {
+          connect: { id: updateBookingDto.propertyDataId },
+        };
+        delete updateData.propertyDataId; // Prisma expects propertyData to be a relation, not just an ID
+      }
+
       const updatedBooking = await this.prisma.booking.update({
         where: { id },
-        data: updateBookingDto,
+        data: updateData,
       });
 
       return updatedBooking;
@@ -128,7 +167,7 @@ export class BookingService {
     }
   }
 
-  // Remove a booking
+  // // Remove a booking
   async remove(id: number): Promise<Booking> {
     try {
       const booking = await this.prisma.booking.findUnique({
@@ -151,6 +190,7 @@ export class BookingService {
   }
 
   // Search bookings based on a query
+
   async search(
     query: string,
     page: number,
@@ -159,7 +199,8 @@ export class BookingService {
     try {
       const skip = (page - 1) * limit;
 
-      const [bookings, totalCount] = await this.prisma.booking.findMany({
+      // Fetch bookings with the given query
+      const bookings = await this.prisma.booking.findMany({
         where: {
           OR: [
             { adult_guest: { contains: query, mode: 'insensitive' } },
@@ -175,9 +216,34 @@ export class BookingService {
         },
       });
 
+      // Manually convert bookingId to string in paymentInfo
+      const updatedBookings = bookings.map((booking) => ({
+        ...booking,
+        paymentInfo: booking.paymentInfo.map((payment) => ({
+          ...payment,
+          bookingId: String(payment.bookingId), // Ensure bookingId is a string
+        })),
+      }));
+
+      // Fetch total count of bookings that match the query
+      const totalCount = await this.prisma.booking.count({
+        where: {
+          OR: [
+            { adult_guest: { contains: query, mode: 'insensitive' } },
+            { children: { contains: query, mode: 'insensitive' } },
+            { cost: { contains: query, mode: 'insensitive' } },
+          ],
+        },
+      });
+
       const totalPages = Math.ceil(totalCount / limit);
 
-      return new PaginatedBookingResult(bookings, totalPages, page, totalCount);
+      return new PaginatedBookingResult(
+        updatedBookings,
+        totalPages,
+        page,
+        totalCount,
+      );
     } catch (error) {
       this.logger.error('Error searching bookings', error);
       throw new HttpException('Error searching bookings', 500);

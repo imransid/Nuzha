@@ -52,7 +52,7 @@ export class PaymentInfo {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
-  propertyId?: number;
+  propertyDataId?: number;
 
   @Field({ nullable: true })
   @IsOptional()

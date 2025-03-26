@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ContactInfo } from './contactInfo.entity';
 import { PaymentInfo } from './paymentInfo.entity';
-import { Property } from './property.entity';
+import { PropertyData } from './property.entity';
 
 @ObjectType()
 export class Booking {
@@ -57,11 +57,11 @@ export class Booking {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
-  propertyId?: number;
+  propertyDataId?: number;
 
-  @Field(() => Property, { nullable: true })
+  @Field(() => PropertyData, { nullable: true })
   @IsOptional()
-  property?: Property;
+  propertyData?: PropertyData;
 
   @Field({ nullable: true })
   @IsOptional()

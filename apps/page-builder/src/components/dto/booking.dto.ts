@@ -14,7 +14,6 @@ import {
 } from 'class-validator';
 import { CreatePaymentInfoDto } from './payment-info.dto';
 import { CreateContactInfoDto } from './contact-info.dto';
-import { Property } from '../entities/property.entity';
 import { Booking } from '../entities/booking.entity';
 
 @InputType()
@@ -57,13 +56,9 @@ export class CreateBookingDto {
   @IsOptional()
   paymentInfo?: CreatePaymentInfoDto[];
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int)
   @IsOptional()
-  propertyId?: number;
-
-  @Field(() => Property, { nullable: true })
-  @IsOptional()
-  property?: Property;
+  propertyDataId?: number;
 }
 
 @InputType()

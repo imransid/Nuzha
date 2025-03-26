@@ -1,10 +1,10 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Property } from './property.entity';
+import { PropertyData } from './property.entity';
 
 @ObjectType()
 export class StandardResponseProperty {
   @Field()
-  data: Property;
+  data: PropertyData;
 
   @Field({ nullable: true })
   message?: string;

@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 
 @ObjectType()
-export class Property {
+export class PropertyData {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
@@ -113,7 +113,7 @@ export class PropertyPhotos {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
-  propertyId?: number;
+  propertyDataId?: number;
 
   @Field({ nullable: true })
   @IsOptional()
@@ -127,4 +127,34 @@ export class PropertyPhotos {
   @Field({ nullable: true })
   @IsOptional()
   updateAt?: Date;
+}
+
+
+
+
+@ObjectType()
+export class PropertyPaginatedResult {
+  @Field(() => [PropertyData], { defaultValue: [] }) // Ensuring it's always an array
+  properties: PropertyData[] = [];
+
+  @Field(() => Int)
+  totalPages: number;
+
+  @Field(() => Int)
+  currentPage: number;
+
+  @Field(() => Int)
+  totalCount: number;
+
+  constructor(
+    properties: PropertyData[],
+    totalPages: number,
+    currentPage: number,
+    totalCount: number,
+  ) {
+    this.properties = properties ?? [];
+    this.totalPages = totalPages;
+    this.currentPage = currentPage;
+    this.totalCount = totalCount;
+  }
 }

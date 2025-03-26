@@ -1,13 +1,15 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto, UpdatePropertyDto } from '../dto/property.dto';
-import { Property } from '../entities/property.entity';
+import {
+  PropertyData,
+  PropertyPaginatedResult,
+} from '../entities/property.entity';
 import { NotFoundException } from '@nestjs/common';
 import { GraphQLException } from 'exceptions/graphql-exception';
-import { PropertyPaginatedResult } from '../dto/property.dto';
 import { StandardResponseProperty } from '../entities/standard-response-entity';
 
-@Resolver(() => Property)
+@Resolver(() => PropertyData)
 export class PropertyResolver {
   constructor(private readonly propertyService: PropertyService) {}
 
@@ -46,10 +48,10 @@ export class PropertyResolver {
     }
   }
 
-  @Query(() => Property)
+  @Query(() => PropertyData)
   async property(
     @Args('id', { type: () => Int }) id: number,
-  ): Promise<Property> {
+  ): Promise<PropertyData> {
     try {
       return await this.propertyService.findOne(id);
     } catch (error) {
@@ -66,11 +68,11 @@ export class PropertyResolver {
     }
   }
 
-  @Mutation(() => Property)
+  @Mutation(() => PropertyData)
   async updateProperty(
     @Args('id', { type: () => Int }) id: number,
     @Args('updatePropertyInput') updatePropertyInput: UpdatePropertyDto,
-  ): Promise<Property> {
+  ): Promise<PropertyData> {
     try {
       return await this.propertyService.update(id, updatePropertyInput);
     } catch (error) {
@@ -87,10 +89,10 @@ export class PropertyResolver {
     }
   }
 
-  @Mutation(() => Property)
+  @Mutation(() => PropertyData)
   async removeProperty(
     @Args('id', { type: () => Int }) id: number,
-  ): Promise<Property> {
+  ): Promise<PropertyData> {
     try {
       return await this.propertyService.remove(id);
     } catch (error) {

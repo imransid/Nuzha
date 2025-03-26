@@ -5,10 +5,7 @@ import {
   PartialType,
   ObjectType,
 } from '@nestjs/graphql';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import { Property } from '../entities/property.entity';
 import { Upload } from 'scalars/upload.scalar';
-import { pathFinderMiddlewareForArrayOfString } from 'middleware/pathFinderMiddleware';
 
 import {
   IsAlpha,
@@ -23,7 +20,6 @@ import {
   IsString,
   IsPhoneNumber,
 } from 'class-validator';
-import { RoleUSER } from '../../../../user-service/src/prisma/role.enum';
 
 @InputType()
 export class CreatePropertyDto {
@@ -126,31 +122,4 @@ export class CreatePropertyDto {
 export class UpdatePropertyDto extends PartialType(CreatePropertyDto) {
   @Field(() => Int)
   id: number;
-}
-
-@ObjectType()
-export class PropertyPaginatedResult {
-  @Field(() => [Property], { defaultValue: [] }) // Ensuring it's always an array
-  properties: Property[] = [];
-
-  @Field(() => Int)
-  totalPages: number;
-
-  @Field(() => Int)
-  currentPage: number;
-
-  @Field(() => Int)
-  totalCount: number;
-
-  constructor(
-    properties: Property[],
-    totalPages: number,
-    currentPage: number,
-    totalCount: number,
-  ) {
-    this.properties = properties ?? [];
-    this.totalPages = totalPages;
-    this.currentPage = currentPage;
-    this.totalCount = totalCount;
-  }
 }

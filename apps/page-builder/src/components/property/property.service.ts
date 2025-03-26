@@ -6,8 +6,10 @@ import {
 } from '@nestjs/common';
 import { PrismaPageBuilderService } from '../../../../../prisma/prisma-page-builder.service';
 import { CreatePropertyDto, UpdatePropertyDto } from '../dto/property.dto';
-import { PropertyPaginatedResult } from '../dto/property.dto';
-import { Property } from '../entities/property.entity';
+import {
+  PropertyData,
+  PropertyPaginatedResult,
+} from '../entities/property.entity';
 
 import {
   deleteFileAndDirectory,
@@ -22,7 +24,7 @@ export class PropertyService {
 
   private uploadDir = join(process.env.UPLOAD_DIR, `Property`, 'files');
 
-  async create(createPropertyDto: CreatePropertyDto): Promise<Property> {
+  async create(createPropertyDto: CreatePropertyDto): Promise<PropertyData> {
     try {
       const imagePaths = createPropertyDto?.photoUpload.map(
         async (image, index) => {
@@ -40,7 +42,7 @@ export class PropertyService {
 
       delete createPropertyDto.photoUpload;
 
-      const createdProperty = await this.prisma.property.create({
+      const createdProperty = await this.prisma.propertyData.create({
         data: {
           ...createPropertyDto,
           otherItem: createPropertyDto.otherItem,
@@ -62,12 +64,12 @@ export class PropertyService {
     const skip = (page - 1) * limit;
 
     const [properties, totalCount] = await Promise.all([
-      this.prisma.property.findMany({
+      this.prisma.propertyData.findMany({
         skip,
         take: limit,
         include: { propertyImage: true },
       }) || [], // Ensure it's always an array
-      this.prisma.property.count(),
+      this.prisma.propertyData.count(),
     ]);
 
     return {
@@ -78,8 +80,8 @@ export class PropertyService {
     };
   }
 
-  async findOne(id: number): Promise<Property> {
-    const property = await this.prisma.property.findUnique({
+  async findOne(id: number): Promise<PropertyData> {
+    const property = await this.prisma.propertyData.findUnique({
       where: { id },
       include: { propertyImage: true },
     });
@@ -92,12 +94,13 @@ export class PropertyService {
   async update(
     id: number,
     updatePropertyInput: UpdatePropertyDto,
-  ): Promise<Property> {
+  ): Promise<PropertyData> {
     try {
-      const existingProperty: Property = await this.prisma.property.findUnique({
-        where: { id },
-        include: { propertyImage: true }, // Include images for deletion check
-      });
+      const existingProperty: PropertyData =
+        await this.prisma.propertyData.findUnique({
+          where: { id },
+          include: { propertyImage: true }, // Include images for deletion check
+        });
 
       if (!existingProperty) {
         throw new NotFoundException(`Property with ID ${id} not found`);
@@ -154,7 +157,7 @@ export class PropertyService {
       }
 
       // ✅ UPDATE PROPERTY IN DATABASE
-      return await this.prisma.property.update({
+      return await this.prisma.propertyData.update({
         where: { id },
         data: propertyUpdateData,
         include: { propertyImage: true }, // Ensure updated images are returned
@@ -164,9 +167,9 @@ export class PropertyService {
     }
   }
 
-  async remove(id: number): Promise<Property> {
+  async remove(id: number): Promise<PropertyData> {
     // ✅ Check if the property exists
-    const existingProperty = await this.prisma.property.findUnique({
+    const existingProperty = await this.prisma.propertyData.findUnique({
       where: { id },
       include: { propertyImage: true }, // ✅ Include images for deletion
     });
@@ -202,7 +205,7 @@ export class PropertyService {
     const skip = (page - 1) * limit;
 
     const [properties, totalCount] = await Promise.all([
-      this.prisma.property.findMany({
+      this.prisma.propertyData.findMany({
         where: {
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
@@ -214,7 +217,7 @@ export class PropertyService {
         take: limit,
         include: { propertyImage: true },
       }),
-      this.prisma.property.count({
+      this.prisma.propertyData.count({
         where: {
           OR: [
             { title: { contains: query, mode: 'insensitive' } },

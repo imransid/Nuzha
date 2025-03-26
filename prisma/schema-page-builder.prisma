@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["linux-musl-arm64-openssl-3.0.x", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
+  binaryTargets = ["linux-musl-arm64-openssl-3.0.x", "linux-arm64-openssl-3.0.x", "debian-openssl-3.0.x", "darwin-arm64"]
   output        = "./generated/page-builder"
 }
 
@@ -10,15 +10,15 @@ datasource db {
 }
 
 model propertyPhotos {
-  id         Int       @id @default(autoincrement())
-  propertyId Int
-  url        String
-  Property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  createdAt  DateTime  @default(now())
-  updateAt   DateTime? @default(now())
+  id           Int          @id @default(autoincrement())
+  propertyId   Int
+  url          String
+  propertyData PropertyData @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+  updateAt     DateTime?    @default(now())
 }
 
-model Property {
+model PropertyData {
   id            Int     @id @default(autoincrement())
   title         String
   price         String?
@@ -38,7 +38,7 @@ model Property {
 
   propertyImage propertyPhotos[]
 
-  booking Booking?
+  booking Booking[]
 }
 
 model Booking {
@@ -57,8 +57,8 @@ model Booking {
   contactInfo ContactInfo[]
   paymentInfo PaymentInfo[]
 
-  propertyId Int?      @unique
-  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyDataId Int
+  propertyData   PropertyData @relation(fields: [propertyDataId], references: [id])
 }
 
 model PaymentInfo {
