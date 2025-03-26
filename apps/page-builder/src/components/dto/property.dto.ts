@@ -116,11 +116,10 @@ export class CreatePropertyDto {
   })
   photoUpload: Upload[];
 
-  @Field(() => [GraphQLJSONObject], {
-    nullable: true,
-    description: 'Additional structured property details',
-  })
-  others?: any[]; // Array of objects for extra metadata
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  others?: string; // Array of objects for extra metadata
 }
 
 @InputType()

@@ -11,7 +11,7 @@ import { StandardResponse } from '../entities/standard-response.dto';
 export class PropertyResolver {
   constructor(private readonly propertyService: PropertyService) {}
 
-  @Mutation(() => Property)
+  @Mutation(() => StandardResponse)
   async createProperty(
     @Args('createPropertyDto') createPropertyDto: CreatePropertyDto,
   ): Promise<StandardResponse> {

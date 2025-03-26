@@ -97,8 +97,9 @@ export class Property {
   @MaxLength(100)
   propertyType?: string;
 
-  @Field(() => GraphQLJSONObject, { nullable: true })
+  @Field({ nullable: true })
   @IsOptional()
+  @IsString()
   others?: any; // Structured JSON for additional details
 }
 
