@@ -55,7 +55,11 @@ export class CategoryService {
     const skip = (page - 1) * limit;
 
     const [category, totalCount] = await Promise.all([
-      this.prisma.category.findMany({ skip, take: limit }),
+      this.prisma.category.findMany({
+        skip,
+        take: limit,
+        include: { PropertyData: true },
+      }),
       this.prisma.category.count(),
     ]);
 
@@ -70,6 +74,9 @@ export class CategoryService {
   async findOne(id: number): Promise<Category> {
     const category = await this.prisma.category.findUnique({
       where: { id },
+      include: {
+        PropertyData: true,
+      },
     });
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);

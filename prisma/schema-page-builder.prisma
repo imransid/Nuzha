@@ -35,8 +35,8 @@ model PropertyData {
   isActive      Boolean @default(false)
   otherItem     String?
 
-  category   Category? @relation(fields: [categoryId], references: [id])
-  categoryId Int?
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
 
   propertyImage propertyPhotos[]
   booking       Booking[]
@@ -98,3 +98,4 @@ model Category {
   name         String
   photo        String
 }
+
