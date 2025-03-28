@@ -210,7 +210,6 @@ export class PropertyService {
         where: {
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
-            { category: { contains: query, mode: 'insensitive' } }, // ✅ Search by category too
             { city: { contains: query, mode: 'insensitive' } }, // ✅ Search by city
           ],
         },
@@ -222,7 +221,6 @@ export class PropertyService {
         where: {
           OR: [
             { title: { contains: query, mode: 'insensitive' } },
-            { category: { contains: query, mode: 'insensitive' } },
             { city: { contains: query, mode: 'insensitive' } },
           ],
         },

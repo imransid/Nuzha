@@ -6,6 +6,8 @@ import { PropertyResolver } from './property/property.resolver';
 import { PropertyService } from './property/property.service';
 import { BookingResolver } from './booking/booking.resolver';
 import { BookingService } from './booking/booking.service';
+import { CategoryResolver } from './category/category.resolver';
+import { CategoryService } from './category/category.service';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { BookingService } from './booking/booking.service';
     PropertyService,
     BookingResolver,
     BookingService,
+    CategoryResolver,
+    CategoryService,
   ],
 
   //PropertyService

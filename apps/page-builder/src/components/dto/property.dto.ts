@@ -41,11 +41,8 @@ export class CreatePropertyDto {
   @MaxLength(100)
   propertyType?: string;
 
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  category?: string;
+  @Field()
+  categoryId: number;
 
   @Field({ nullable: true })
   @IsOptional()

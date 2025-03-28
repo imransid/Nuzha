@@ -23,7 +23,6 @@ model PropertyData {
   title         String
   price         String?
   propertyType  String?
-  category      String?
   description   String?
   facility      String?
   location      String?
@@ -36,9 +35,13 @@ model PropertyData {
   isActive      Boolean @default(false)
   otherItem     String?
 
-  propertyImage propertyPhotos[]
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
 
-  booking Booking[]
+  propertyImage propertyPhotos[]
+  booking       Booking[]
+
+  @@index([categoryId])
 }
 
 model Booking {
@@ -87,4 +90,11 @@ model ContactInfo {
 
   Booking   Booking? @relation(fields: [bookingId], references: [id])
   bookingId Int?
+}
+
+model Category {
+  id           Int            @id @default(autoincrement())
+  PropertyData PropertyData[]
+  name         String
+  photo        String
 }

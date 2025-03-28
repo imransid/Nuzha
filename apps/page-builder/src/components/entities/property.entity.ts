@@ -29,11 +29,8 @@ export class PropertyData {
   @MaxLength(100)
   price?: string;
 
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  category?: string;
+  @Field()
+  categoryId?: number;
 
   @Field({ nullable: true })
   @IsOptional()
