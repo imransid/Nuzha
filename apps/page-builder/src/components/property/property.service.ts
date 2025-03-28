@@ -96,71 +96,72 @@ export class PropertyService {
     updatePropertyInput: UpdatePropertyDto,
   ): Promise<PropertyData> {
     try {
-      const existingProperty: PropertyData =
-        await this.prisma.propertyData.findUnique({
-          where: { id },
-          include: { propertyImage: true }, // Include images for deletion check
-        });
+      // 🔹 Step 1: Find existing property
+      const existingProperty = await this.prisma.propertyData.findUnique({
+        where: { id },
+        include: { propertyImage: true },
+      });
 
       if (!existingProperty) {
         throw new NotFoundException(`Property with ID ${id} not found`);
       }
 
-      let propertyUpdateData = {
-        ...updatePropertyInput,
-      };
+      // 🔹 Step 2: Upload new images if provided
+      let uploadedImages: string[] = [];
 
-      // ✅ DELETE OLD IMAGES FROM STORAGE & DATABASE
       if (updatePropertyInput.photoUpload?.length) {
-        if (existingProperty?.propertyImage?.length) {
-          // Remove old image files
-          for (const image of existingProperty.propertyImage) {
-            const prevFilePath = image.url.replace(
-              `${process.env.BASE_URL}/`,
-              '',
-            );
-            deleteFileAndDirectory(prevFilePath);
-          }
-
-          // ✅ Delete old images from the database
-          await this.prisma.propertyPhotos.deleteMany({
-            where: { propertyId: id },
-          });
-        }
-
-        // ✅ UPLOAD NEW IMAGES
-        const imagePaths = await Promise.all(
+        uploadedImages = await Promise.all(
           updatePropertyInput.photoUpload.map(async (image, index) => {
-            const imageFile: any = image;
+            const imageFile: any = await image;
             const fileName = `${Date.now()}_${index}_${imageFile.filename}`;
-            const filePath = await uploadFileStream(
+            return await uploadFileStream(
               imageFile.createReadStream,
               this.uploadDir,
               fileName,
             );
-            return { url: filePath, propertyId: id };
           }),
         );
+      }
 
-        // ✅ INSERT NEW IMAGES INTO DATABASE
-        await this.prisma.propertyPhotos.createMany({
-          data: imagePaths,
+      const { photoUpload, ...updateData } = updatePropertyInput;
+
+      // 🔹 Step 3: Prisma Transaction for Atomic Updates
+      return await this.prisma.$transaction(async (prisma) => {
+        // ✅ Step 3.1: Update PropertyData
+        const updatedProperty = await prisma.propertyData.update({
+          where: { id },
+          data: {
+            ...updateData,
+          },
         });
-      }
 
-      // ✅ ENSURE `others` FIELD UPDATES PROPERLY
-      if (updatePropertyInput.otherItem) {
-        propertyUpdateData = {
-          ...propertyUpdateData,
-          otherItem: updatePropertyInput.otherItem,
-        };
-      }
+        // ✅ Step 3.2: Delete Old Images (if new images uploaded)
+        if (
+          uploadedImages.length > 0 &&
+          existingProperty.propertyImage.length > 0
+        ) {
+          await prisma.propertyPhotos.deleteMany({ where: { propertyId: id } });
 
-      // ✅ UPDATE PROPERTY IN DATABASE
-      return await this.prisma.propertyData.update({
-        where: { id },
-        data: propertyUpdateData,
-        include: { propertyImage: true }, // Ensure updated images are returned
+          existingProperty.propertyImage.forEach((img) => {
+            const prevFilePath = img.url.replace(
+              `${process.env.BASE_URL}/`,
+              '',
+            );
+            deleteFileAndDirectory(prevFilePath);
+          });
+        }
+
+        // ✅ Step 3.3: Insert New Images (if provided)
+        if (uploadedImages.length > 0) {
+          await prisma.propertyPhotos.createMany({
+            data: uploadedImages.map((url) => ({
+              propertyId: id,
+              url,
+            })),
+          });
+        }
+
+        return updatedProperty;
       });
     } catch (error) {
       throw new HttpException(`Error Updating Property: ${error.message}`, 500);

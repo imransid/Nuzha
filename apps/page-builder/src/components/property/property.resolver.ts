@@ -74,8 +74,12 @@ export class PropertyResolver {
     @Args('updatePropertyInput') updatePropertyInput: UpdatePropertyDto,
   ): Promise<PropertyData> {
     try {
+      console.log('updatePropertyInput', updatePropertyInput);
+
       return await this.propertyService.update(id, updatePropertyInput);
     } catch (error) {
+      console.log('error', error);
+
       if (error instanceof NotFoundException) {
         throw new GraphQLException(
           `Property with ID ${id} not found`,

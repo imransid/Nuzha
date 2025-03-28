@@ -81,28 +81,42 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            # Prepare SSH configuration and add the private key
             mkdir -p ~/.ssh
             echo "StrictHostKeyChecking no" >> ~/.ssh/config
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
             chmod 600 ~/.ssh/id_ed25519
             ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+            # Go to the project directory
             cd /root/nuzha/Nuzha
+
+            # Pull the latest code
             git pull origin main
+
+            # Stop and remove existing containers, pull the latest images, and rebuild
             docker compose down
             docker compose pull
             docker compose up --build -d
             docker system prune -af
 
-            # Wait for services to be fully up
-            sleep 10
+            # Wait for containers to fully start
+            sleep 30  # Adjust this time if necessary
 
             # Fetch container IDs dynamically
             USER_CONTAINER=$(docker ps -qf "name=user-service")
             PAGE_BUILDER_CONTAINER=$(docker ps -qf "name=page-builder")
 
-            # Run Prisma commands inside containers
+            # Check if the containers are up and running
+            if [[ -z "$USER_CONTAINER" || -z "$PAGE_BUILDER_CONTAINER" ]]; then
+              echo "Error: One or more containers are not running."
+              exit 1
+            fi
+
+            # Run Prisma commands inside the User Service container
             docker exec $USER_CONTAINER npx prisma generate --schema=./prisma/schema-user.prisma
             docker exec $USER_CONTAINER npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
 
+            # Run Prisma commands inside the Page Builder container
             docker exec $PAGE_BUILDER_CONTAINER npx prisma generate --schema=./prisma/schema-page-builder.prisma
             docker exec $PAGE_BUILDER_CONTAINER npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma

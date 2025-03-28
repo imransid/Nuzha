@@ -113,7 +113,7 @@ export class PropertyPhotos {
   @Field(() => Int, { nullable: true })
   @IsOptional()
   @IsNumber()
-  propertyDataId?: number;
+  propertyId?: number;
 
   @Field({ nullable: true })
   @IsOptional()
@@ -128,9 +128,6 @@ export class PropertyPhotos {
   @IsOptional()
   updateAt?: Date;
 }
-
-
-
 
 @ObjectType()
 export class PropertyPaginatedResult {
