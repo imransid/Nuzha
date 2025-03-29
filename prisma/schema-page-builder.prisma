@@ -99,3 +99,41 @@ model Category {
   photo        String
 }
 
+model Wallet {
+  id Int @id @default(autoincrement())
+
+  wallet_total_balance String
+  cardInformation      CardInformation[]
+  transaction          Transaction[]
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+}
+
+model CardInformation {
+  id Int @id @default(autoincrement())
+
+  card_holder_name  String
+  card_number       String
+  card_expired_date DateTime
+
+  wallet   Wallet @relation(fields: [walletID], references: [id])
+  walletID Int
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  transaction_receiver_name String
+  card_number               String
+
+  wallet           Wallet @relation(fields: [walletID], references: [id])
+  walletID         Int
+  transaction_type String
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+}

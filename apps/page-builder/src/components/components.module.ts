@@ -8,6 +8,8 @@ import { BookingResolver } from './booking/booking.resolver';
 import { BookingService } from './booking/booking.service';
 import { CategoryResolver } from './category/category.resolver';
 import { CategoryService } from './category/category.service';
+import { WalletResolver } from './wallet/wallet.resolver';
+import { WalletService } from './wallet/wallet.service';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { CategoryService } from './category/category.service';
     BookingService,
     CategoryResolver,
     CategoryService,
+    WalletService,
+    WalletResolver,
   ],
 
   //PropertyService
