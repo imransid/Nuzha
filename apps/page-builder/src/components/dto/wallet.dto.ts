@@ -16,6 +16,10 @@ export class CreateWalletDto {
   @IsString()
   wallet_total_balance: string;
 
+  @Field()
+  @IsString()
+  user_id: string;
+
   @Field(() => [CreateCardInformationDto], { nullable: true })
   @IsOptional()
   cardInformation?: CreateCardInformationDto[];

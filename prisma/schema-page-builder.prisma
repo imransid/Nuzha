@@ -105,6 +105,7 @@ model Wallet {
   wallet_total_balance String
   cardInformation      CardInformation[]
   transaction          Transaction[]
+  user_id              String
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())

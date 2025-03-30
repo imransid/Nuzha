@@ -12,8 +12,16 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 //import { PrismaService } from '../../../prisma/prisma-user.service';
 import { PrismaModule } from '../../../prisma/prisma.module';
 
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { join } from 'path';
+// import { WebsocketsModule } from './chat/chat.module';
+
 @Module({
-imports: [  
+  imports: [
+    // WebsocketsModule,
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(__dirname, '..', 'static'),
+    // }),
     UserModule,
     PrismaModule,
     JwtModule.registerAsync({
@@ -38,15 +46,15 @@ imports: [
             pass: configService.get('EMAIL_PASSWORD'),
           },
         },
-     })
+      }),
     }),
   ],
   controllers: [UserServiceController],
   providers: [
-    UserService, 
+    UserService,
     JwtService,
     //PrismaService,
-    ConfigService  
+    ConfigService,
   ],
 })
 export class UserServiceModule {}

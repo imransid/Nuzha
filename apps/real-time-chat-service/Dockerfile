@@ -13,16 +13,12 @@ COPY . .
 
 RUN  npm rebuild bcrypt --build-from-source
 
-RUN npx prisma generate --schema=./prisma/schema-user.prisma
-
-RUN npx prisma generate --schema=./prisma/schema-page-builder.prisma
-
 RUN npx prisma generate --schema=./prisma/schema-chat.service.prisma
 
 
 RUN yarn build
 
-CMD ["node", "dist/apps/api-gateway/main"]
+CMD ["node", "dist/apps/real-time-chat-service/main"]
 
 FROM node:20 as production
 
@@ -40,4 +36,4 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/apps/api-gateway/main"]
+CMD ["node", "dist/apps/real-time-chat-service/main"]

@@ -31,6 +31,21 @@ services:
     ports:
       - '4011:4011'
 
+  real-time-chat:
+    build:
+      context: .
+      dockerfile: ./apps/real-time-chat-service/Dockerfile
+      target: development
+    command: yarn start:dev real-time-chat-service
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '4029:4029'
+
   page-builder:
     build:
       context: .

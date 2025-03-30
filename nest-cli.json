@@ -43,6 +43,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/page-builder/tsconfig.app.json"
       }
+    },
+    "real-time-chat-service": {
+      "type": "application",
+      "root": "apps/real-time-chat-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/real-time-chat-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/real-time-chat-service/tsconfig.app.json"
+      }
     }
   },
   "monorepo": true,

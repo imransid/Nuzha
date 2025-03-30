@@ -13,6 +13,10 @@ export class Wallet {
   @IsString()
   wallet_total_balance: string;
 
+  @Field()
+  @IsString()
+  user_id: string;
+
   @Field(() => [CardInformation], { nullable: true })
   @IsOptional()
   cardInformation?: CardInformation[];
