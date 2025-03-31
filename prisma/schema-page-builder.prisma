@@ -138,3 +138,15 @@ model Transaction {
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())
 }
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  type      String
+  timestamp DateTime @default(now())
+  read      Boolean  @default(false)
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+}

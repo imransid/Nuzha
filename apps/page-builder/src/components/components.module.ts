@@ -10,6 +10,10 @@ import { CategoryResolver } from './category/category.resolver';
 import { CategoryService } from './category/category.service';
 import { WalletResolver } from './wallet/wallet.resolver';
 import { WalletService } from './wallet/wallet.service';
+import { NotificationListenerService } from './notification/notification.listener';
+import { NotificationResolver } from './notification/notification.resolver';
+import { NotificationService } from './notification/notification.service';
+import { DatabaseTriggerService } from './notification/database-trigger.service';
 
 @Module({
   imports: [
@@ -36,6 +40,10 @@ import { WalletService } from './wallet/wallet.service';
     CategoryService,
     WalletService,
     WalletResolver,
+    NotificationListenerService,
+    NotificationResolver,
+    NotificationService,
+    DatabaseTriggerService,
   ],
 
   //PropertyService

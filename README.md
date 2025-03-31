@@ -134,13 +134,16 @@ http://localhost:4099/graphql
 docker exec 085bc71c24ab npx prisma generate --schema=./prisma/schema-page-builder.prisma
 docker exec 085bc71c24ab npx prisma migrate deploy --schema=./prisma/schema-user.prisma
 
-docker exec 3c82a8e54695 npx prisma generate --schema=./prisma/schema-user.prisma
-docker exec 3c82a8e54695 npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
+docker exec 7f27699c7fd9 npx prisma generate --schema=./prisma/schema-user.prisma
+docker exec 7f27699c7fd9 npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
 
-docker exec bf352cfb94d7 npx prisma generate --schema=./prisma/schema-page-builder.prisma
-docker exec bf352cfb94d7 npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
+docker exec 97cf3b78cd1c npx prisma generate --schema=./prisma/schema-page-builder.prisma
 
+docker exec 97cf3b78cd1c npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
 
+docker exec 086cd1cad78a npx prisma generate --schema=./prisma/schema-chat.service.prisma
+
+docker exec 086cd1cad78a npx prisma db push --force-reset --schema=./prisma/schema-chat.service.prisma
 
 npx prisma db push --force-reset --schema=./prisma/schema-chat.service.prisma
 
@@ -152,3 +155,5 @@ AAFQEgAAGXTJv4NeP2Wo2YSSQNqPaXh_r0XjlSb_XkXpQg
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
+
+<!-- postgresql://postgres:postgres@localhost:5432/real-time-chat?schema=public -->
