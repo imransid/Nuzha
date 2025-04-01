@@ -14,6 +14,10 @@ export class CreateContactInfoDto {
   name: string;
 
   @Field()
+  @IsString()
+  user_id?: string;
+
+  @Field()
   @IsEmail()
   email: string;
 

@@ -97,7 +97,11 @@ export class PropertyData {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  otherItem?: string; // Structured JSON for additional details
+  otherItem?: string; // Structured JSON for additional
+
+  @Field()
+  @IsString()
+  user_id: string;
 }
 
 @ObjectType()

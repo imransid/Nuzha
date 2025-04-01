@@ -7,8 +7,12 @@ import { Notification } from '../entities/notification.entity';
 export class NotificationService {
   constructor(private prisma: PrismaPageBuilderService) {}
 
-  async findAll(): Promise<Notification[]> {
-    return this.prisma.notification.findMany();
+  async findAll(userId: number): Promise<Notification[]> {
+    return this.prisma.notification.findMany({
+      where: {
+        userId: userId,
+      },
+    });
   }
 
   async create(data: {
@@ -16,7 +20,7 @@ export class NotificationService {
     message: string;
     type: string;
   }): Promise<Notification> {
-    return this.prisma.notification.create({
+    return await this.prisma.notification.create({
       data,
     });
   }

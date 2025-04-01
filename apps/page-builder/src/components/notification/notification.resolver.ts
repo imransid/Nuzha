@@ -8,8 +8,10 @@ export class NotificationResolver {
   constructor(private notificationService: NotificationService) {}
 
   @Query(() => [Notification])
-  async notifications(): Promise<Notification[]> {
-    return this.notificationService.findAll();
+  async notifications(
+    @Args('user_id', { type: () => Number }) user_id: number,
+  ): Promise<Notification[]> {
+    return this.notificationService.findAll(user_id);
   }
 
   @Mutation(() => Notification)

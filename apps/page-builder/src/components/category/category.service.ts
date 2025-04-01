@@ -41,6 +41,7 @@ export class CategoryService {
       const createdCategory = await this.prisma.category.create({
         data: {
           ...createCategoryDto,
+          user_id: createCategoryDto.user_id,
           photo: propertyImage.length > 0 ? propertyImage[0] : '',
         },
       });

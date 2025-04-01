@@ -113,6 +113,10 @@ export class CreatePropertyDto {
   @IsOptional()
   @IsString()
   otherItem?: string; // Array of objects for extra metadata
+
+  @Field()
+  @IsString()
+  user_id?: string; // Array of objects for extra metadata
 }
 
 @InputType()

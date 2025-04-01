@@ -30,7 +30,7 @@ export class NotificationListenerService implements OnModuleInit {
           const payload = JSON.parse(msg.payload);
 
           let message = '';
-          let userID = payload.data.userId || -1;
+          let userID = payload.data.user_id || -1;
           const tableName = payload.table;
 
           switch (payload.action) {
@@ -47,12 +47,16 @@ export class NotificationListenerService implements OnModuleInit {
               message = `An unknown action occurred on the ${tableName} table.`;
           }
 
+          console.log('New notification created:', message);
           // Create the notification
-          await this.notificationService.create({
-            userId: userID,
-            message: message,
-            type: 'info',
-          });
+
+          if (tableName !== 'Notification') {
+            await this.notificationService.create({
+              userId: parseInt(userID),
+              message: message,
+              type: 'info',
+            });
+          }
 
           console.log('New notification created:', message);
         } catch (error) {

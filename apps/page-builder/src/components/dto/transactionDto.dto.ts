@@ -21,6 +21,10 @@ export class CreateTransactionDto {
   @Field(() => Int)
   @IsInt()
   walletID: number;
+
+  @Field()
+  @IsString()
+  user_id?: string;
 }
 
 //

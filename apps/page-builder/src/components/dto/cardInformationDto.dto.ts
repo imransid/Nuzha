@@ -15,6 +15,10 @@ export class CreateCardInformationDto {
   card_number: string;
 
   @Field()
+  @IsString()
+  user_id?: string;
+
+  @Field()
   @IsDateString()
   card_expired_date: Date;
 

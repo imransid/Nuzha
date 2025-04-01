@@ -31,6 +31,7 @@ export class WalletService {
               card_holder_name: card.card_holder_name,
               card_number: card.card_number,
               card_expired_date: card.card_expired_date,
+              user_id: createWalletDto.user_id,
             })),
           },
           transaction: {
@@ -38,6 +39,7 @@ export class WalletService {
               transaction_receiver_name: txn.transaction_receiver_name,
               card_number: txn.card_number,
               transaction_type: txn.transaction_type,
+              user_id: createWalletDto.user_id,
             })),
           },
         },

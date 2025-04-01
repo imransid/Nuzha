@@ -21,6 +21,10 @@ export class Category {
   @MaxLength(100)
   photo?: string;
 
+  @Field()
+  @IsString()
+  user_id: string;
+
   @Field(() => [PropertyData], { nullable: true })
   @IsOptional()
   PropertyData?: PropertyData[];

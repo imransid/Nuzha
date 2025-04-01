@@ -34,6 +34,7 @@ model PropertyData {
   postcode      String?
   isActive      Boolean @default(false)
   otherItem     String?
+  user_id       String
 
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
@@ -54,8 +55,8 @@ model Booking {
   createdAt          DateTime  @default(now())
   updateAt           DateTime? @default(now())
 
-  status Boolean?
-  userId String?
+  status  Boolean?
+  user_id String
 
   contactInfo ContactInfo[]
   paymentInfo PaymentInfo[]
@@ -71,13 +72,13 @@ model PaymentInfo {
   cardholderName String?
   cardName       String?
   experienceDate String?
-  userId         Int
   propertyId     Int
   createdAt      DateTime  @default(now())
   updateAt       DateTime? @default(now())
 
   Booking   Booking? @relation(fields: [bookingId], references: [id])
   bookingId Int?
+  user_id   String
 }
 
 model ContactInfo {
@@ -90,6 +91,7 @@ model ContactInfo {
 
   Booking   Booking? @relation(fields: [bookingId], references: [id])
   bookingId Int?
+  user_id   String
 }
 
 model Category {
@@ -97,6 +99,10 @@ model Category {
   PropertyData PropertyData[]
   name         String
   photo        String
+  user_id      String
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
 }
 
 model Wallet {
@@ -120,6 +126,7 @@ model CardInformation {
 
   wallet   Wallet @relation(fields: [walletID], references: [id])
   walletID Int
+  user_id  String
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())
@@ -134,6 +141,8 @@ model Transaction {
   wallet           Wallet @relation(fields: [walletID], references: [id])
   walletID         Int
   transaction_type String
+
+  user_id String
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())

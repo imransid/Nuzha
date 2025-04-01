@@ -45,6 +45,7 @@ export class PropertyService {
       const createdProperty = await this.prisma.propertyData.create({
         data: {
           ...createPropertyDto,
+          user_id: createPropertyDto.user_id,
           otherItem: createPropertyDto.otherItem,
           propertyImage: {
             create: propertyImage.map((url) => ({ url })),

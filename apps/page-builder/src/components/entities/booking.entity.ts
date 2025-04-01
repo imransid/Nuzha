@@ -41,10 +41,9 @@ export class Booking {
   @IsBoolean()
   status?: boolean;
 
-  @Field({ nullable: true })
-  @IsOptional()
+  @Field()
   @IsString()
-  userId?: string;
+  user_id: string;
 
   @Field(() => [ContactInfo], { nullable: true })
   @IsOptional()

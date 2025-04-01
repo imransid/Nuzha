@@ -24,6 +24,10 @@ export class CardInformation {
   @IsInt()
   walletID: number;
 
+  @Field()
+  @IsString()
+  user_id: string;
+
   @Field(() => Wallet, { nullable: true })
   wallet?: Wallet;
 

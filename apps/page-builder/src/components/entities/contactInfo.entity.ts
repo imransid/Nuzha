@@ -23,6 +23,10 @@ export class ContactInfo {
   @IsString()
   phone?: string;
 
+  @Field()
+  @IsString()
+  user_id: string;
+
   @Field({ nullable: true })
   @IsOptional()
   createdAt?: Date;

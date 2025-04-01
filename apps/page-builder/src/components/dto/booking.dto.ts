@@ -43,10 +43,9 @@ export class CreateBookingDto {
   @IsBoolean()
   status?: boolean;
 
-  @Field({ nullable: true })
-  @IsOptional()
+  @Field()
   @IsString()
-  userId?: string;
+  user_id?: string;
 
   @Field(() => [CreateContactInfoDto], { nullable: true })
   @IsOptional()

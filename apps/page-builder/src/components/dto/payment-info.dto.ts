@@ -29,8 +29,8 @@ export class CreatePaymentInfoDto {
   experienceDate?: string;
 
   @Field()
-  @IsInt()
-  userId: number;
+  @IsString()
+  user_id?: string;
 
   @Field()
   @IsInt()

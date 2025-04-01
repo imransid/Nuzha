@@ -27,18 +27,20 @@ export class BookingService {
       // Create the booking
       const booking = await this.prisma.booking.create({
         data: {
+          user_id: createBookingDto.user_id,
           propertyDataId: createBookingDto.propertyDataId,
           ...bookingData,
           contactInfo: {
             create: contactInfo?.map((info) => ({
               name: info.name,
               email: info.email,
+              user_id: createBookingDto.user_id,
               phone: info.phone,
             })),
           },
           paymentInfo: {
             create: paymentInfo?.map((info) => ({
-              userId: info.userId,
+              user_id: createBookingDto.user_id,
               propertyId: createBookingDto.propertyDataId,
               paymentInfo: info.paymentInfo,
               transactionID: info.transactionID,

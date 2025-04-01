@@ -44,10 +44,9 @@ export class PaymentInfo {
   @IsDateString()
   experienceDate?: string;
 
-  @Field(() => Int, { nullable: true })
-  @IsOptional()
-  @IsNumber()
-  userId?: number;
+  @Field()
+  @IsString()
+  user_id: string;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()

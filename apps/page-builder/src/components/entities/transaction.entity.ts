@@ -29,4 +29,8 @@ export class Transaction {
 
   @Field({ nullable: true })
   updateAt?: Date;
+
+  @Field()
+  @IsString()
+  user_id: string;
 }
