@@ -7,6 +7,7 @@ import { ChangePasswordInput } from './dto/change-password.input';
 import { LoginInput } from './dto/login.input';
 import { Auth } from './entities/auth.entity';
 import { StandardResponse } from './dto/standard-response.dto';
+import { VerifyOtpInput } from './dto/verify-otp.input';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -52,5 +53,12 @@ export class UserResolver {
   @Mutation(() => Auth)
   async login(@Args('data') data: LoginInput) {
     return await this.userService.login(data);
+  }
+
+  @Mutation(() => StandardResponse)
+  async verifyOtp(
+    @Args('verifyOtpInput') verifyOtpInput: VerifyOtpInput,
+  ): Promise<StandardResponse> {
+    return this.userService.verifyOtp(verifyOtpInput);
   }
 }

@@ -53,9 +53,13 @@ export class User {
   @IsBoolean()
   isUserActive?: boolean;
 
+  @Field()
+  @IsOptional()
+  @IsBoolean()
+  isUserEmailVerified?: boolean;
+
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
   photo?: string;
-
 }

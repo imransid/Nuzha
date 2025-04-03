@@ -28,10 +28,12 @@ import {
   uploadFileStream,
 } from 'utils/file-upload.util';
 import { StandardResponse } from './dto/standard-response.dto';
+import { VerifyOtpInput } from './dto/verify-otp.input';
 
 @Injectable()
 export class UserService {
   private uploadDir = path.join(process.env.UPLOAD_DIR, `UserS`, 'files');
+  private otpStore = new Map<string, { otp: string; expiresAt: number }>();
   constructor(
     @Inject(PrismaUserService) private prismaService: PrismaUserService,
     private jwtService: JwtService,
@@ -68,8 +70,19 @@ export class UserService {
       },
     });
 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+    this.otpStore.set(email, { otp, expiresAt });
+
+    await sendMail(
+      [email],
+      'Your OTP Code',
+      `Your OTP is ${otp}`,
+      this.mailService,
+    );
+
     return {
-      message: `User ${user.fullName} has been successfully created.`,
+      message: `User ${user.fullName} OTP sent to email`,
       data: user,
     };
   }
@@ -236,6 +249,10 @@ export class UserService {
       isEmailValid.password,
     );
 
+    if (isEmailValid.isUserEmailVerified === false) {
+      throw new UnauthorizedException('Email is not verified.');
+    }
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password invalid.');
     }
@@ -253,6 +270,56 @@ export class UserService {
       name: isEmailValid.fullName,
       token: accessToken,
       userType: isEmailValid.role,
+    };
+  }
+
+  async verifyOtp(input: VerifyOtpInput): Promise<StandardResponse> {
+    const { email, otp } = input;
+    const record = this.otpStore.get(email);
+
+    if (!record) {
+      throw new HttpException(
+        'OTP not found. Please request a new one.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (Date.now() > record.expiresAt) {
+      this.otpStore.delete(email);
+      throw new HttpException(
+        'OTP expired. Please request a new one.',
+        HttpStatus.GONE,
+      );
+    }
+
+    if (record.otp !== otp) {
+      throw new HttpException('Invalid OTP.', HttpStatus.UNAUTHORIZED);
+    }
+
+    const user = await this.prismaService.users.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    await this.prismaService.users.update({
+      where: {
+        email: email,
+      },
+      data: {
+        isUserEmailVerified: true,
+      },
+    });
+
+    this.otpStore.delete(email); // OTP is one-time use
+
+    return {
+      message: 'OTP verified successfully.',
+      data: null,
     };
   }
 }

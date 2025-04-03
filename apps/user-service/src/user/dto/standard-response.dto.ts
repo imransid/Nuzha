@@ -4,7 +4,7 @@ import { User } from '../entities/user.entity';
 @ObjectType()
 export class StandardResponse {
   @Field()
-  data: User;
+  data: User | null;
 
   @Field({ nullable: true })
   message?: string;

@@ -22,6 +22,7 @@ model users {
   twoStepVerification Boolean?
   isUserActive        Boolean?
   photo               String?
+  isUserEmailVerified Boolean  @default(false)
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())
