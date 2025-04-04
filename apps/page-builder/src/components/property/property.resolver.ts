@@ -24,8 +24,10 @@ export class PropertyResolver {
         data: res,
       };
     } catch (error) {
+      console.log('error', error);
+
       throw new GraphQLException(
-        'Failed to create property',
+        'Failed to create property' + error.toString(),
         'INTERNAL_SERVER_ERROR',
       );
     }

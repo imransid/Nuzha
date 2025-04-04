@@ -45,6 +45,7 @@ services:
       - /usr/src/app/node_modules
     ports:
       - '4029:4029'
+      - '8976:8976'
 
   page-builder:
     build:

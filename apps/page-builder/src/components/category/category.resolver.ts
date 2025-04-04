@@ -23,7 +23,7 @@ export class CategoryResolver {
       };
     } catch (error) {
       throw new GraphQLException(
-        'Failed to create category',
+        'Failed to create category ' + error.toString(),
         'INTERNAL_SERVER_ERROR',
       );
     }

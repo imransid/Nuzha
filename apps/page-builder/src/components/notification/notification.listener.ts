@@ -29,6 +29,8 @@ export class NotificationListenerService implements OnModuleInit {
         try {
           const payload = JSON.parse(msg.payload);
 
+          console.log('msg', msg);
+
           let message = '';
           let userID = payload.data.user_id || -1;
           const tableName = payload.table;
