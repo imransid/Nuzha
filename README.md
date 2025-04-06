@@ -137,8 +137,8 @@ docker exec 085bc71c24ab npx prisma migrate deploy --schema=./prisma/schema-user
 docker exec 10285e579b9a npx prisma generate --schema=./prisma/schema-user.prisma
 docker exec 10285e579b9a npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
 
-docker exec b1c64a43b1a8 npx prisma generate --schema=./prisma/schema-page-builder.prisma
-docker exec b1c64a43b1a8 npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
+docker exec a9cf81d65dfd npx prisma generate --schema=./prisma/schema-page-builder.prisma
+docker exec a9cf81d65dfd npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
 
 docker exec c2112aecfdb7 npx prisma generate --schema=./prisma/schema-chat.service.prisma
 docker exec c2112aecfdb7 npx prisma db push --force-reset --schema=./prisma/schema-chat.service.prisma

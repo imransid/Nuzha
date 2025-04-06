@@ -70,7 +70,7 @@ export class UserService {
       },
     });
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(10000 + Math.random() * 90000).toString();
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
     this.otpStore.set(email, { otp, expiresAt });
 
