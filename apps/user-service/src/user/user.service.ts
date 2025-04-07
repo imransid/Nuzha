@@ -216,6 +216,47 @@ export class UserService {
     }
   }
 
+  async resendOtp(email: string): Promise<StandardResponse> {
+    const user = await this.prismaService.users.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const existingOtpRecord = this.otpStore.get(email);
+
+    let otp: string;
+    let expiresAt: number;
+
+    if (existingOtpRecord && Date.now() <= existingOtpRecord.expiresAt) {
+      // OTP is still valid, resend the existing one
+      otp = existingOtpRecord.otp;
+      expiresAt = existingOtpRecord.expiresAt;
+    } else {
+      // OTP has expired or doesn't exist, generate a new one
+      otp = Math.floor(10000 + Math.random() * 90000).toString(); // Generate 5-digit OTP
+      expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes validity
+
+      // Update OTP store with new OTP and expiration time
+      this.otpStore.set(email, { otp, expiresAt });
+    }
+
+    // Send the OTP to the user's email
+    await sendMail(
+      [email],
+      'Your OTP Code',
+      `Your OTP is ${otp}`,
+      this.mailService,
+    );
+
+    return {
+      message: `OTP sent to ${email}`,
+      data: null,
+    };
+  }
+
   async remove(id: number): Promise<User> {
     try {
       const isUserExist = await this.findOne(id);

@@ -61,4 +61,9 @@ export class UserResolver {
   ): Promise<StandardResponse> {
     return this.userService.verifyOtp(verifyOtpInput);
   }
+
+  @Mutation(() => StandardResponse)
+  async resendOtp(@Args('email') email: string): Promise<StandardResponse> {
+    return this.userService.resendOtp(email);
+  }
 }
