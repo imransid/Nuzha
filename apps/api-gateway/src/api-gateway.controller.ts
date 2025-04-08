@@ -4,7 +4,17 @@ import { GoogleAuthGuard } from 'apps/user-service/src/guard/google-auth/google-
 
 @Controller()
 export class ApiGatewayController {
-  constructor( @Inject('USER_SERVICE') private readonly userService: ClientProxy) {}
+  constructor(
+    @Inject('USER_SERVICE') private readonly userService: ClientProxy,
+    @Inject('PAGE_BUILDER_SERVICE')
+    private readonly PageBuilderService: ClientProxy,
+  ) {}
+
+  @Get('wallet_user')
+  createWallet() {
+    console.log('hited');
+    return this.PageBuilderService.send('wallet_user', {});
+  }
 
   @Get('users')
   getUsers() {

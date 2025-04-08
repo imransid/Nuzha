@@ -7,10 +7,13 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import googleOauthConfig from './config/google-oauth.config';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { PrismaModule } from '../../../../prisma/prisma.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+// import { PageBuilderModule } from '../../../page-builder/src/page-builder.module';
 
 @Module({
   imports: [
     ConfigModule.forFeature(googleOauthConfig),
+    // PageBuilderModule,
     PrismaModule,
 
     JwtModule.registerAsync({

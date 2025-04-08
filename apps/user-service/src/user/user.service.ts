@@ -8,6 +8,7 @@ import {
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaUserService } from '../../../../prisma/prisma-user.service';
+import { PrismaPageBuilderService } from '../../../../prisma/prisma-page-builder.service';
 import * as bcrypt from 'bcrypt';
 import {
   GCodeData,
@@ -36,6 +37,9 @@ export class UserService {
   private otpStore = new Map<string, { otp: string; expiresAt: number }>();
   constructor(
     @Inject(PrismaUserService) private prismaService: PrismaUserService,
+    @Inject(PrismaPageBuilderService)
+    private prismaBuilderService: PrismaPageBuilderService,
+
     private jwtService: JwtService,
     private configService: ConfigService,
     private readonly mailService: MailerService,
@@ -74,12 +78,16 @@ export class UserService {
     const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
     this.otpStore.set(email, { otp, expiresAt });
 
-    await sendMail(
-      [email],
-      'Your OTP Code',
-      `Your OTP is ${otp}`,
-      this.mailService,
-    );
+    sendMail([email], 'Your OTP Code', `Your OTP is ${otp}`, this.mailService);
+
+    let wallet = await this.prismaBuilderService.wallet.create({
+      data: {
+        wallet_total_balance: '0000',
+        user_id: user.id.toString(),
+      },
+    });
+
+    console.log('user', user, wallet);
 
     return {
       message: `User ${user.fullName} OTP sent to email`,
