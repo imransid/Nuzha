@@ -12,6 +12,8 @@ import { ChatService } from './chat.service';
   cors: {
     origin: '*',
   },
+  path: '/ws', // 🔧 Match Nginx config
+  transports: ['websocket', 'polling'],
 })
 export class ChatGateway {
   @WebSocketServer()
