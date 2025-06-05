@@ -134,14 +134,14 @@ http://localhost:4099/graphql
 docker exec 085bc71c24ab npx prisma generate --schema=./prisma/schema-page-builder.prisma
 docker exec 085bc71c24ab npx prisma migrate deploy --schema=./prisma/schema-user.prisma
 
-docker exec 8ab667f4d1ee npx prisma generate --schema=./prisma/schema-user.prisma
-docker exec 8ab667f4d1ee npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
+docker exec 8cba96a2d934 npx prisma generate --schema=./prisma/schema-user.prisma
+docker exec 8cba96a2d934 npx prisma db push --force-reset --schema=./prisma/schema-user.prisma
 
 docker exec d1ced19d087a npx prisma generate --schema=./prisma/schema-hr.prisma
 docker exec d1ced19d087a npx prisma db push --force-reset --schema=./prisma/schema-hr.prisma
 
-docker exec 19df81a345b9 npx prisma generate --schema=./prisma/schema-page-builder.prisma
-docker exec 19df81a345b9 npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
+docker exec 5221a459ff7d npx prisma generate --schema=./prisma/schema-page-builder.prisma
+docker exec 5221a459ff7d npx prisma db push --force-reset --schema=./prisma/schema-page-builder.prisma
 
 docker exec c2112aecfdb7 npx prisma generate --schema=./prisma/schema-chat.service.prisma
 docker exec c2112aecfdb7 npx prisma db push --force-reset --schema=./prisma/schema-chat.service.prisma

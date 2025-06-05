@@ -107,6 +107,8 @@ model Category {
   name         String
   photo        String
   user_id      String
+  propertyType String?
+  description  String?
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())

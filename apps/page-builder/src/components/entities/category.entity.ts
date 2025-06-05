@@ -18,6 +18,16 @@ export class Category {
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
+  propertyType?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
   @MaxLength(100)
   photo?: string;
 

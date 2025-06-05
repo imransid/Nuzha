@@ -33,6 +33,16 @@ export class CreateCategoryDto {
   @IsString()
   user_id?: string;
 
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  propertyType?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @Field(() => [Upload], {
     nullable: true,
     description: 'Input for the Photo Image.',
