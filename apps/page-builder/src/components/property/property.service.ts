@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaPageBuilderService } from '../../../../../prisma/prisma-page-builder.service';
+import { PrismaUserService } from '../../../../../prisma/prisma-user.service'; // ../../../../prisma/prisma-user.service';
 import { CreatePropertyDto, UpdatePropertyDto } from '../dto/property.dto';
 import {
   PropertyData,
@@ -19,7 +20,10 @@ import { join } from 'path';
 
 @Injectable()
 export class PropertyService {
-  constructor(private readonly prisma: PrismaPageBuilderService) {}
+  constructor(
+    private readonly prisma: PrismaPageBuilderService,
+    private readonly prismaUser: PrismaUserService,
+  ) {}
   private logger = new Logger('Latest Property  service');
 
   private uploadDir = join(process.env.UPLOAD_DIR, `Property`, 'files');
@@ -68,13 +72,29 @@ export class PropertyService {
       this.prisma.propertyData.findMany({
         skip,
         take: limit,
-        include: { propertyImage: true },
-      }) || [], // Ensure it's always an array
+        include: { propertyImage: true, reviews: true },
+      }),
       this.prisma.propertyData.count(),
     ]);
 
+    // Fetch user data for each property in parallel
+    const propertiesWithUser = await Promise.all(
+      properties.map(async (property) => {
+        const userData = await this.prismaUser.users.findUnique({
+          where: {
+            id: parseInt(property.user_id),
+          },
+        });
+
+        return {
+          ...property,
+          user: userData,
+        };
+      }),
+    );
+
     return {
-      properties: Array.isArray(properties) ? properties : [], // Safety check
+      properties: propertiesWithUser,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,
       totalCount,
@@ -86,10 +106,21 @@ export class PropertyService {
       where: { id },
       include: { propertyImage: true },
     });
+
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
-    return property;
+
+    const userData = await this.prismaUser.users.findUnique({
+      where: {
+        id: parseInt(property.user_id),
+      },
+    });
+
+    return {
+      ...property,
+      user: userData, // 👈 Attach user to the property manually
+    };
   }
 
   async update(

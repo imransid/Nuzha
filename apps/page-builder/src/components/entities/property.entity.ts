@@ -9,6 +9,8 @@ import {
   MaxLength,
   IsNumber,
 } from 'class-validator';
+import { User } from 'apps/user-service/src/user/entities/user.entity';
+import { Review } from './review.entity';
 
 @ObjectType()
 export class PropertyData {
@@ -102,6 +104,39 @@ export class PropertyData {
   @Field()
   @IsString()
   user_id: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  rating?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  roomDetails?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  roomFeatures?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  adult_guest?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  child_guest?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  user?: User;
+
+  @Field(() => [Review], { nullable: true })
+  @IsOptional()
+  reviews?: Review[];
 }
 
 @ObjectType()

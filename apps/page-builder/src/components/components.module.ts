@@ -14,6 +14,8 @@ import { NotificationListenerService } from './notification/notification.listene
 import { NotificationResolver } from './notification/notification.resolver';
 import { NotificationService } from './notification/notification.service';
 import { DatabaseTriggerService } from './notification/database-trigger.service';
+import { ReviewResolver } from './review/review.resolver';
+import { ReviewService } from './review/review.service';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { DatabaseTriggerService } from './notification/database-trigger.service'
     NotificationResolver,
     NotificationService,
     DatabaseTriggerService,
+    ReviewResolver,
+    ReviewService,
   ],
 
   //PropertyService

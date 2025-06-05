@@ -10,12 +10,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaUserService } from '../../../../prisma/prisma-user.service';
 import { PrismaPageBuilderService } from '../../../../prisma/prisma-page-builder.service';
 import * as bcrypt from 'bcrypt';
-import {
-  GCodeData,
-  GoogleLoginInput,
-  LoginInput,
-  UpdatePasswordDate,
-} from './dto/login.input';
+import { LoginInput, UpdatePasswordDate } from './dto/login.input';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwtPayload.interface';
 import { User } from './entities/user.entity';

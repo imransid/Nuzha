@@ -36,11 +36,18 @@ model PropertyData {
   otherItem     String?
   user_id       String
 
+  rating       String?
+  roomDetails  String?
+  roomFeatures String?
+  adult_guest  String?
+  child_guest  String?
+
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId Int
 
   propertyImage propertyPhotos[]
   booking       Booking[]
+  reviews       Review[]
 
   @@index([categoryId])
 }
@@ -155,6 +162,19 @@ model Notification {
   type      String
   timestamp DateTime @default(now())
   read      Boolean  @default(false)
+
+  createdAt DateTime  @default(now())
+  updateAt  DateTime? @default(now())
+}
+
+model Review {
+  id      Int    @id @default(autoincrement())
+  userId  String
+  rating  String
+  comment String
+
+  propertyId Int
+  property   PropertyData @relation(fields: [propertyId], references: [id])
 
   createdAt DateTime  @default(now())
   updateAt  DateTime? @default(now())

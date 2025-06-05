@@ -1,4 +1,3 @@
-import { UserType } from '../../prisma/user-type.enum';
 import { RoleUSER } from '../../prisma/role.enum';
 
 export class JwtPayload {

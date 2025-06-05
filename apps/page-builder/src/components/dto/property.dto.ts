@@ -41,7 +41,7 @@ export class CreatePropertyDto {
   @MaxLength(100)
   propertyType?: string;
 
-  @Field()
+  @Field(() => Int)
   categoryId: number;
 
   @Field({ nullable: true })
@@ -113,6 +113,31 @@ export class CreatePropertyDto {
   @IsOptional()
   @IsString()
   otherItem?: string; // Array of objects for extra metadata
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  rating?: string; // Array of objects for extra metadata
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  roomDetails?: string; // Array of objects for extra metadata
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  roomFeatures?: string; // Array of objects for extra metadata
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  adult_guest?: string; // Array of objects for extra metadata
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
+  child_guest?: string; // Array of objects for extra metadata
 
   @Field()
   @IsString()
